@@ -4,6 +4,7 @@ import { usePublicPackages } from '../context/PublicPackagesContext';
 import { useCategories } from '../context/CategoryContext';
 import LocalImage from './LocalImage';
 import { getImageUrl } from '../services/apiClient';
+import AIChatPlanner from './ai-chat-planner';
 
 // Best selling tour packages data (static dummy data + dynamic from database)
 const staticBestSellingPackages = [
@@ -315,6 +316,11 @@ export default function PlanningTripPage() {
               View All Packages
             </button>
           </div>
+        </div>
+
+        {/* AI Chat Planner Section */}
+        <div className="mt-12">
+          <AIChatPlanner />
         </div>
       </div>
     </div>

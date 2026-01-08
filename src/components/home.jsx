@@ -303,7 +303,9 @@ export default function Home() {
               <p className="text-gray-600 mb-6">
                 Discover our most popular tour packages curated by thousands of happy travelers
               </p>
-              <button className="bg-cyan-400 hover:bg-cyan-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-300 shadow-lg">
+              <button
+                onClick={() => navigate('/planning')}
+                className="bg-cyan-400 hover:bg-cyan-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-300 shadow-lg">
                 View All Packages
               </button>
               <div className="mt-8 hidden lg:block">

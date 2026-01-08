@@ -29,7 +29,7 @@ export default function Header() {
           {/* Logo - Desktop (left side) */}
           <div className="hidden md:block">
             <img 
-              src="/images/logo1.png" 
+              src="/images/logo.png"
               alt="Ceyluxe Logo" 
               className="h-32 w-auto object-contain"
             />
@@ -68,7 +68,7 @@ export default function Header() {
           {/* Mobile Layout - Logo centered */}
           <div className="md:hidden flex-1 flex justify-center">
             <img 
-              src="/images/logo1.png" 
+              src="/images/logo.png"
               alt="Ceyluxe Logo" 
               className="h-24 w-auto object-contain"
             />

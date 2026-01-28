@@ -18,37 +18,72 @@ export default function ContactUsPage() {
   const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
   const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
+  const WHATSAPP_NUMBER = '94774488732'; // 0774488732 in international format
+
+  const openWhatsApp = (customMessage) => {
+    const defaultMessage = 'Hello, I am contacting you via the website.';
+    const text = encodeURIComponent(customMessage || defaultMessage);
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+    window.location.href = url;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setMessage({ type: '', text: '' });
 
-    try {
-      // Send email using EmailJS
-      const result = await emailjs.sendForm(
-        SERVICE_ID,
-        TEMPLATE_ID,
-        form.current,
-        PUBLIC_KEY
-      );
+    // Capture form values once for WhatsApp prefill
+    const formData = new FormData(form.current);
+    const fullName = formData.get('from_name') || '';
+    const email = formData.get('from_email') || '';
+    const phone = formData.get('phone_number') || '';
+    const country = formData.get('country') || '';
+    const question = formData.get('message') || '';
 
-      console.log('Email sent successfully:', result.text);
-      setMessage({ 
-        type: 'success', 
-        text: 'Message sent successfully! We will get back to you soon.' 
-      });
-      
-      // Reset form
-      form.current.reset();
-      
+    // Build WhatsApp fallback message
+    const whatsappMessage = `
+Hello, my name is ${fullName || 'N/A'}. I would like to contact you.
+Email: ${email || 'N/A'}
+Phone: ${phone || 'N/A'}
+Country: ${country || 'N/A'}
+Question: ${question || 'N/A'}
+    `.trim();
+
+    let emailSucceeded = false;
+
+    try {
+      // Only attempt EmailJS if configuration looks present
+      if (SERVICE_ID && TEMPLATE_ID && PUBLIC_KEY) {
+        const result = await emailjs.sendForm(
+          SERVICE_ID,
+          TEMPLATE_ID,
+          form.current,
+          PUBLIC_KEY
+        );
+
+        console.log('Email sent successfully:', result.text);
+        emailSucceeded = true;
+        setMessage({ 
+          type: 'success', 
+          text: 'Message sent successfully! We will get back to you soon.' 
+        });
+      } else {
+        console.warn('EmailJS configuration missing, skipping email send and using WhatsApp fallback.');
+      }
     } catch (error) {
       console.error('Email send failed:', error);
       setMessage({ 
         type: 'error', 
-        text: 'Failed to send message. Please try again or contact us directly.' 
+        text: 'Failed to send message via email. Redirecting you to WhatsApp instead.' 
       });
     } finally {
       setIsLoading(false);
+
+      // Reset form regardless
+      form.current.reset();
+
+      // Always navigate to WhatsApp as fallback or secondary channel
+      openWhatsApp(whatsappMessage);
     }
   };
     return (

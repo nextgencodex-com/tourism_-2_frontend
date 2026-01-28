@@ -9,6 +9,14 @@ export default function KeyExperiencesPage() {
     window.scrollTo(0, 0);
   }, []);
   
+  const WHATSAPP_NUMBER = '94774488732'; // 0774488732 in international format
+  const openWhatsApp = (customMessage) => {
+    const defaultMessage = 'Hello, I would like to book this experience.';
+    const text = encodeURIComponent(customMessage || defaultMessage);
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+    window.open(url, '_blank');
+  };
+
   const navigateToAI = () => {
     navigate('/');
     setTimeout(() => {
@@ -16,71 +24,12 @@ export default function KeyExperiencesPage() {
     }, 100);
   };
 
-  const handleBookNow = (categoryUrl) => {
-    navigate(`/planning/category/${categoryUrl}`);
+  const handleBookNow = (experienceTitle) => {
+    openWhatsApp(`Hello, I would like to book this experience: ${experienceTitle}.`);
   };
 
   const experiences = [
-    {
-      id: 1,
-      title: "Cultural Heritage",
-      description: "Immerse yourself in Sri Lanka's rich cultural heritage with visits to ancient temples, historical sites, and traditional ceremonies.",
-      image: "/images/cultural-1.jpg",
-      highlights: ["Temple of the Sacred Tooth Relic", "Ancient City of Polonnaruwa", "Traditional Dance Performances", "Local Artisan Workshops"],
-      duration: "2-3 days",
-      price: "From $150",
-      categoryUrl: "cultural-heritage"
-    },
-    {
-      id: 2,
-      title: "Wildlife Safari",
-      description: "Experience the thrill of spotting elephants, leopards, and exotic birds in their natural habitat across Sri Lanka's national parks.",
-      image: "/images/wildlife-1.jpg",
-      highlights: ["Yala National Park Safari", "Udawalawe Elephant Gathering", "Bird Watching Tours", "Conservation Education"],
-      duration: "1-2 days",
-      price: "From $120",
-      categoryUrl: "wildlife-nature"
-    },
-    {
-      id: 3,
-      title: "Tea Plantation Tours",
-      description: "Discover the world-famous Ceylon tea with guided tours through lush tea estates in the misty highlands.",
-      image: "/images/misty.jpg",
-      highlights: ["Tea Factory Visits", "Tea Tasting Sessions", "Plantation Walks", "Traditional Tea Making"],
-      duration: "1 day",
-      price: "From $80",
-      categoryUrl: "adventure-tours"
-    },
-    {
-      id: 4,
-      title: "Beach & Water Sports",
-      description: "Enjoy pristine beaches and exciting water activities along Sri Lanka's stunning coastline.",
-      image: "/images/beach-1.jpg",
-      highlights: ["Surfing Lessons", "Snorkeling Adventures", "Whale Watching", "Beach Yoga Sessions"],
-      duration: "2-4 days",
-      price: "From $200",
-      categoryUrl: "beach-holidays"
-    },
-    {
-      id: 5,
-      title: "Ayurveda & Wellness",
-      description: "Rejuvenate your mind and body with traditional Ayurvedic treatments and wellness programs.",
-      image: "/images/wellness-1.jpg",
-      highlights: ["Ayurvedic Consultations", "Traditional Massages", "Meditation Sessions", "Herbal Medicine"],
-      duration: "3-7 days",
-      price: "From $300",
-      categoryUrl: "pilgrimage-tours"
-    },
-    {
-      id: 6,
-      title: "Adventure Sports",
-      description: "Get your adrenaline pumping with thrilling adventure activities in Sri Lanka's diverse landscapes.",
-      image: "/images/wellness-2.jpg",
-      highlights: ["Rock Climbing", "White Water Rafting", "Zip Lining", "Mountain Biking"],
-      duration: "1-3 days",
-      price: "From $100",
-      categoryUrl: "adventure-tours"
-    }
+    
   ];
 
   return (
@@ -186,12 +135,9 @@ export default function KeyExperiencesPage() {
                 </div>
                 
                 <div className="flex space-x-2">
-                  <button className="flex-1 bg-cyan-400 text-white py-2 px-4 rounded-lg font-semibold hover:bg-cyan-500 transition-colors">
-                    Learn More
-                  </button>
                   <button 
                     className="flex-1 border border-cyan-400 text-cyan-400 py-2 px-4 rounded-lg font-semibold hover:bg-cyan-400 hover:text-white transition-colors"
-                    onClick={() => handleBookNow(experience.categoryUrl)}
+                    onClick={() => handleBookNow(experience.title)}
                   >
                     Book Now
                   </button>

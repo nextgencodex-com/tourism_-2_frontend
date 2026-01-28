@@ -4,259 +4,56 @@ import { usePublicPackages } from '../context/PublicPackagesContext';
 import { useCategories } from '../context/CategoryContext';
 import LocalImage from './LocalImage';
 
-// Category data with packages
+// Category data (used only for fallback metadata like title/description/image)
 const categoryData = {
   'beach-holidays': {
     title: 'Beach Holidays',
     description: 'Discover Sri Lanka\'s golden coast with pristine beaches and water activities',
     image: '/images/beach-1.jpg',
     color: 'text-blue-600',
-    bgColor: 'bg-blue-50',
-    packages: [
-      {
-        id: 'BH-01',
-        title: 'Tropical Beach Paradise',
-        duration: '5 Days / 4 Nights',
-        price: '$380',
-        image: '/images/Tropical-Paradise 1.jpg',
-        highlights: ['Mirissa Beach', 'Whale Watching', 'Water Sports', 'Sunset Cruises'],
-        description: 'Experience the perfect blend of relaxation and adventure on Sri Lanka\'s most beautiful beaches.'
-      },
-      {
-        id: 'BH-02',
-        title: 'Luxury Beach Resort',
-        duration: '7 Days / 6 Nights',
-        price: '$650',
-        image: '/images/Beach-Resort 1.jpg',
-        highlights: ['Private Beach Access', 'Luxury Accommodation', 'Spa Treatments', 'Gourmet Dining'],
-        description: 'Indulge in luxury with our premium beach resort package featuring world-class amenities.'
-      },
-      {
-        id: 'BH-03',
-        title: 'Adventure Beach Combo',
-        duration: '6 Days / 5 Nights',
-        price: '$480',
-        image: '/images/Adventure-Beach 1.jpg',
-        highlights: ['Surfing Lessons', 'Snorkeling', 'Island Hopping', 'Beach Camping'],
-        description: 'Combine beach relaxation with thrilling water sports and outdoor adventures.'
-      }
-    ]
+    bgColor: 'bg-blue-50'
   },
   'adventure-tours': {
     title: 'Adventure Tours',
     description: 'Thrilling experiences with hiking, climbing, and outdoor activities',
     image: '/images/ella.jpg',
     color: 'text-green-600',
-    bgColor: 'bg-green-50',
-    packages: [
-      {
-        id: 'AT-01',
-        title: 'Hill Country Explorer',
-        duration: '6 Days / 5 Nights',
-        price: '$450',
-        image: '/images/hill 1.jpg',
-        highlights: ['Ella Hiking', 'Nine Arch Bridge', 'Tea Plantations', 'Train Journey'],
-        description: 'Explore the misty hills and tea plantations of Sri Lanka\'s central highlands.'
-      },
-      {
-        id: 'AT-02',
-        title: 'Mountain Trekking',
-        duration: '4 Days / 3 Nights',
-        price: '$320',
-        image: '/images/Mountain 1.jpg',
-        highlights: ['Pidurangala Rock', 'Sunrise Hikes', 'Rock Climbing', 'Mountain Views'],
-        description: 'Challenge yourself with exciting mountain treks and breathtaking panoramic views.'
-      },
-      {
-        id: 'AT-03',
-        title: 'Wilderness Adventure',
-        duration: '5 Days / 4 Nights',
-        price: '$390',
-        image: '/images/wild 1.jpg',
-        highlights: ['Forest Trails', 'Waterfall Hikes', 'Camping', 'Wildlife Spotting'],
-        description: 'Immerse yourself in nature with guided wilderness adventures and camping experiences.'
-      }
-    ]
+    bgColor: 'bg-green-50'
   },
   'cultural-heritage': {
     title: 'Cultural Heritage',
     description: 'Ancient temples, traditions, and rich cultural experiences',
     image: '/images/cultural-1.jpg',
     color: 'text-orange-600',
-    bgColor: 'bg-orange-50',
-    packages: [
-      {
-        id: 'CH-01',
-        title: 'Cultural Triangle Discovery',
-        duration: '7 Days / 6 Nights',
-        price: '$430',
-        image: '/images/sigiriya.jpg',
-        highlights: ['Sigiriya Rock Fortress', 'Dambulla Cave Temple', 'Temple of the Tooth', 'Cultural Dance Show'],
-        description: 'Journey through Sri Lanka\'s ancient kingdoms and UNESCO World Heritage sites.'
-      },
-      {
-        id: 'CH-02',
-        title: 'Sacred Cities Tour',
-        duration: '5 Days / 4 Nights',
-        price: '$380',
-        image: '/images/cultural-2.jpg',
-        highlights: ['Anuradhapura', 'Polonnaruwa', 'Sacred Bodhi Tree', 'Ancient Stupas'],
-        description: 'Explore the sacred cities that shaped Sri Lanka\'s Buddhist heritage and culture.'
-      },
-      {
-        id: 'CH-03',
-        title: 'Traditional Arts & Crafts',
-        duration: '4 Days / 3 Nights',
-        price: '$290',
-        image: '/images/history.jpg',
-        highlights: ['Traditional Workshops', 'Artisan Villages', 'Handicraft Making', 'Cultural Performances'],
-        description: 'Learn traditional Sri Lankan arts and crafts from master artisans and craftsmen.'
-      }
-    ]
+    bgColor: 'bg-orange-50'
   },
   'wildlife-nature': {
     title: 'Wildlife & Nature',
     description: 'Explore national parks and encounter diverse wildlife',
     image: '/images/wildlife-1.jpg',
     color: 'text-emerald-600',
-    bgColor: 'bg-emerald-50',
-    packages: [
-      {
-        id: 'WN-01',
-        title: 'Wildlife Safari Adventure',
-        duration: '4 Days / 3 Nights',
-        price: '$520',
-        image: '/images/yala.jpg',
-        highlights: ['Yala National Park', 'Leopard Spotting', 'Bird Watching', 'Safari Tours'],
-        description: 'Experience the thrill of wildlife safaris in Sri Lanka\'s most famous national park.'
-      },
-      {
-        id: 'WN-02',
-        title: 'Bird Watching Paradise',
-        duration: '5 Days / 4 Nights',
-        price: '$450',
-        image: '/images/wildlife-2.jpg',
-        highlights: ['Endemic Birds', 'Wetland Tours', 'Expert Guides', 'Photography'],
-        description: 'Discover Sri Lanka\'s rich birdlife with expert guides and prime viewing locations.'
-      },
-      {
-        id: 'WN-03',
-        title: 'Elephant Conservation',
-        duration: '3 Days / 2 Nights',
-        price: '$280',
-        image: '/images/safari.jpg',
-        highlights: ['Elephant Orphanage', 'Conservation Center', 'Feeding Sessions', 'Educational Tours'],
-        description: 'Learn about elephant conservation and interact with these gentle giants responsibly.'
-      }
-    ]
+    bgColor: 'bg-emerald-50'
   },
   'honeymoon-packages': {
     title: 'Honeymoon Packages',
     description: 'Romantic getaways for newlyweds and couples',
     image: '/images/honeymoon-1.jpg',
     color: 'text-pink-600',
-    bgColor: 'bg-pink-50',
-    packages: [
-      {
-        id: 'HM-01',
-        title: 'Romantic Honeymoon',
-        duration: '8 Days / 7 Nights',
-        price: '$680',
-        image: '/images/honeymoon package 1.jpg',
-        highlights: ['Private Beach Villa', 'Couple Spa', 'Sunset Dinners', 'Island Hopping'],
-        description: 'Create unforgettable memories with our romantic honeymoon package designed for couples.'
-      },
-      {
-        id: 'HM-02',
-        title: 'Luxury Couple Retreat',
-        duration: '6 Days / 5 Nights',
-        price: '$750',
-        image: '/images/couple 1.jpg',
-        highlights: ['Luxury Accommodation', 'Private Pool', 'Gourmet Dining', 'Couple Activities'],
-        description: 'Indulge in luxury with our premium couple retreat featuring exclusive amenities.'
-      },
-      {
-        id: 'HM-03',
-        title: 'Adventure Romance',
-        duration: '7 Days / 6 Nights',
-        price: '$580',
-        image: '/images/adventure romance 1.jpg',
-        highlights: ['Adventure Activities', 'Romantic Dinners', 'Scenic Views', 'Couple Bonding'],
-        description: 'Combine adventure and romance with exciting activities designed for couples.'
-      }
-    ]
+    bgColor: 'bg-pink-50'
   },
   'pilgrimage-tours': {
     title: 'Pilgrimage Tours',
     description: 'Sacred sites and spiritual journeys across Sri Lanka',
     image: '/images/cultural-2.jpg',
     color: 'text-purple-600',
-    bgColor: 'bg-purple-50',
-    packages: [
-      {
-        id: 'PT-01',
-        title: 'Buddhist Pilgrimage',
-        duration: '7 Days / 6 Nights',
-        price: '$420',
-        image: '/images/bodi 1.jpg',
-        highlights: ['Sacred Bodhi Tree', 'Temple of the Tooth', 'Ancient Monasteries', 'Meditation Sessions'],
-        description: 'Embark on a spiritual journey to Sri Lanka\'s most sacred Buddhist sites.'
-      },
-      {
-        id: 'PT-02',
-        title: 'Multi-Faith Pilgrimage',
-        duration: '5 Days / 4 Nights',
-        price: '$350',
-        image: '/images/faith 1.png',
-        highlights: ['Buddhist Temples', 'Hindu Kovils', 'Christian Churches', 'Islamic Mosques'],
-        description: 'Explore the diverse religious heritage of Sri Lanka with visits to sacred sites of all faiths.'
-      },
-      {
-        id: 'PT-03',
-        title: 'Meditation Retreat',
-        duration: '4 Days / 3 Nights',
-        price: '$280',
-        image: '/images/meditation 1.jpg',
-        highlights: ['Meditation Centers', 'Silent Retreat', 'Spiritual Guidance', 'Peaceful Environment'],
-        description: 'Find inner peace and spiritual growth with guided meditation and retreat experiences.'
-      }
-    ]
+    bgColor: 'bg-purple-50'
   },
   'family-vacations': {
     title: 'Family Vacations',
     description: 'Perfect family-friendly adventures and activities',
     image: '/images/traveling.jpg',
     color: 'text-indigo-600',
-    bgColor: 'bg-indigo-50',
-    packages: [
-      {
-        id: 'FV-01',
-        title: 'Family Fun Adventure',
-        duration: '7 Days / 6 Nights',
-        price: '$580',
-        image: '/images/family fun 1.jpg',
-        highlights: ['Kid-friendly Activities', 'Educational Tours', 'Safe Adventures', 'Family Bonding'],
-        description: 'Create lasting family memories with activities designed for all ages and interests.'
-      },
-      {
-        id: 'FV-02',
-        title: 'Educational Family Tour',
-        duration: '6 Days / 5 Nights',
-        price: '$520',
-        image: '/images/educational 1.jpg',
-        highlights: ['Historical Sites', 'Cultural Learning', 'Interactive Museums', 'Educational Guides'],
-        description: 'Combine fun and learning with educational tours perfect for curious young minds.'
-      },
-      {
-        id: 'FV-03',
-        title: 'Beach Family Holiday',
-        duration: '5 Days / 4 Nights',
-        price: '$450',
-        image: '/images/beach family 1.jpg',
-        highlights: ['Safe Beaches', 'Water Activities', 'Family Resorts', 'Childcare Services'],
-        description: 'Enjoy a relaxing beach holiday with family-friendly resorts and activities.'
-      }
-    ]
+    bgColor: 'bg-indigo-50'
   }
 };
 
@@ -265,6 +62,14 @@ export default function CategoryPage() {
   const navigate = useNavigate();
   const { getPackagesByCategory, isLoading, error } = usePublicPackages();
   const { getCategoryById, isLoading: categoriesLoading } = useCategories();
+  
+  const WHATSAPP_NUMBER = '94774488732'; // 0774488732 in international format
+  const openWhatsApp = (customMessage) => {
+    const defaultMessage = 'Hello, I am interested in this tour package.';
+    const text = encodeURIComponent(customMessage || defaultMessage);
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+    window.open(url, '_blank');
+  };
   
   // Scroll to top when component mounts or categoryId changes
   useEffect(() => {
@@ -302,11 +107,8 @@ export default function CategoryPage() {
   };
   
   const firebasePackages = getCategoryPackages();
-  // Combine static packages with Firebase packages
-  const allPackages = [
-    ...(staticCategory?.packages || []),
-    ...firebasePackages
-  ];
+  // Use only dynamic packages from the backend/database
+  const allPackages = firebasePackages;
   
   const handleCustomize = (pkg) => {
     // Add category information to the package data
@@ -485,7 +287,16 @@ export default function CategoryPage() {
                     >
                       Customize your package
                     </button>
-                    <button className="w-full border border-green-600 text-green-600 py-3 px-6 rounded-md font-semibold hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center gap-2">
+                    <button
+                      className="w-full border border-green-600 text-green-600 py-3 px-6 rounded-md font-semibold hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 flex items-center justify-center gap-2"
+                      onClick={() =>
+                        openWhatsApp(
+                          `Hello, I am interested in this tour package: ${pkg.title || 'Tour Package'} in the category: ${
+                            categoryInfo.title
+                          }.`
+                        )
+                      }
+                    >
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488" />
                       </svg>

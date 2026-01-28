@@ -85,10 +85,10 @@ export default function Footer() {
 
                   <div className="text-center sm:text-right">
                     <p className="text-white text-sm font-medium drop-shadow-md">
-                      CONCEPT AND DESIGN BY <span className="font-bold">NextGen CodeX</span>
+                      CONCEPT AND DESIGN BY <span className="font-bold">NextGen CodeX PVT LTD</span>
                     </p>
                     <p className="text-white/80 text-xs mt-1">
-                      © {new Date().getFullYear()} Magic Island Tours. All rights reserved.
+                      © {new Date().getFullYear()} Ceyluxe Journeys. All rights reserved.
                     </p>
                   </div>
                 </div>

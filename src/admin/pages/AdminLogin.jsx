@@ -153,12 +153,7 @@ const AdminLogin = () => {
                 </motion.div>
               )}
 
-              {/* Demo Credentials */}
-              <div className="bg-cyan-50 border border-cyan-200 text-cyan-700 px-4 py-3 rounded-lg text-sm">
-                <p className="font-medium mb-1">Demo Credentials:</p>
-                <p>Email: admin@ceyluxe.com</p>
-                <p>Password: admin123</p>
-              </div>
+              
 
               {/* Submit Button - matching your site's button style */}
               <motion.button

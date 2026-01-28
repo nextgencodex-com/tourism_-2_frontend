@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Paperclip, Upload, Send, Mic, Facebook, MessageCircle, Music } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import InteractiveSriLankaMap from "./map"
+import { generateTripPlan } from "../services/aiTripPlannerService"
 
 export default function Home() {
   const navigate = useNavigate()
@@ -11,37 +12,78 @@ export default function Home() {
   const [dragActive, setDragActive] = useState(false)
   const [tripQuery, setTripQuery] = useState("")
   const [showUploadSection, setShowUploadSection] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [aiResponse, setAiResponse] = useState(null)
+  const [error, setError] = useState(null)
+  
+  // AI Travel Assistant chat messages
+  const [assistantMessages, setAssistantMessages] = useState([
+    {
+      id: 1,
+      role: 'assistant',
+      content: 'Hello! I\'m your AI Travel Assistant. How can I help you plan your perfect Sri Lankan adventure today?',
+      timestamp: new Date(),
+    },
+  ])
+  const messagesEndRef = useRef(null)
 
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://cdn.botpress.cloud/webchat/v0/inject.js";
-    script.async = true;
-    script.onload = () => {
-      window.botpressWebChat.init({
-        botId: "978fea9e-4cc3-437a-b3f5-3eb8baba0022",
-        hostUrl: "https://cdn.botpress.cloud/webchat/v0",
-        messagingUrl: "https://messaging.botpress.cloud",
-        clientId: "978fea9e-4cc3-437a-b3f5-3eb8baba0022",
-        enableConversationDeletion: true,
-        showPoweredBy: false,
-        useSessionStorage: false,
-        botName: "Ceyluxe AI",
-        layoutWidth: "400px",
-        stylesheet: "https://cdn.botpress.cloud/webchat/v0/themes/default.css",
-        enableReset: true,
-        avatarUrl: "https://cdn-icons-png.flaticon.com/512/4712/4712109.png",
-      });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [assistantMessages, isLoading])
+  
+  // Custom AI Chat Widget State
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [chatMessages, setChatMessages] = useState([
+    {
+      id: 1,
+      role: 'assistant',
+      content: 'Hello! I\'m Ceyluxe AI, your personal travel assistant. How can I help you plan your perfect Sri Lankan adventure today?',
+      timestamp: new Date(),
+    },
+  ])
+  const [chatInput, setChatInput] = useState("")
+  const [isChatLoading, setIsChatLoading] = useState(false)
 
-      // Hide the widget initially
-      window.botpressWebChat.hide();
-    };
-    document.body.appendChild(script);
+  // Handle chat message sending
+  const handleChatSend = async () => {
+    if (!chatInput.trim()) return
 
-    // Cleanup function to remove the script when component unmounts
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+    const userMessage = {
+      id: chatMessages.length + 1,
+      role: 'user',
+      content: chatInput,
+      timestamp: new Date(),
+    }
+
+    setChatMessages(prev => [...prev, userMessage])
+    setChatInput("")
+    setIsChatLoading(true)
+
+    try {
+      const response = await generateTripPlan(chatInput)
+      const aiMessage = {
+        id: chatMessages.length + 2,
+        role: 'assistant',
+        content: response?.response || response?.message || JSON.stringify(response),
+        timestamp: new Date(),
+      }
+      setChatMessages(prev => [...prev, aiMessage])
+    } catch (err) {
+      const errorMessage = {
+        id: chatMessages.length + 2,
+        role: 'assistant',
+        content: `Sorry, I encountered an error: ${err.message}. Please try again.`,
+        timestamp: new Date(),
+        isError: true,
+      }
+      setChatMessages(prev => [...prev, errorMessage])
+    } finally {
+      setIsChatLoading(false)
+    }
+  }
+
+  // Remove Botpress, we'll use custom chat
 
   const handleFileSelect = (file) => {
     setSelectedFile(file)
@@ -73,15 +115,55 @@ export default function Home() {
     }
   }
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (tripQuery.trim()) {
       console.log("Sending query:", tripQuery)
-      if (selectedFile) {
-        console.log("With attached file:", selectedFile.name)
-      }
+      const currentQuery = tripQuery
+      
+      setAssistantMessages(prev => {
+        const userMessage = {
+          id: prev.length + 1,
+          role: 'user',
+          content: currentQuery,
+          timestamp: new Date(),
+        }
+        return [...prev, userMessage]
+      })
+      
       setTripQuery("")
+      setIsLoading(true)
+      setError(null)
       setSelectedFile(null)
       setShowUploadSection(false)
+      
+      try {
+        const response = await generateTripPlan(currentQuery)
+        console.log("AI Response:", response)
+        setAssistantMessages(prev => {
+          const aiMessage = {
+            id: prev.length + 1,
+            role: 'assistant',
+            content: response?.response || response?.message || JSON.stringify(response),
+            timestamp: new Date(),
+          }
+          return [...prev, aiMessage]
+        })
+      } catch (err) {
+        console.error("Error:", err)
+        setAssistantMessages(prev => {
+          const errorMessage = {
+            id: prev.length + 1,
+            role: 'assistant',
+            content: `Sorry, I encountered an error: ${err.message}. Please try again.`,
+            timestamp: new Date(),
+            isError: true,
+          }
+          return [...prev, errorMessage]
+        })
+        setError(err.message)
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -171,122 +253,72 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Modified AI Input Section with Attachment icon on the left */}
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 mb-8 sm:mb-10 lg:mb-12">
-          <div className="flex items-center space-x-4">
-            {/* Input with attachment icon on the left */}
-            <div className="relative flex-1">
-              <button
-                onClick={() => setShowUploadSection(!showUploadSection)}
-                className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
-              >
-                <Paperclip className="w-5 h-5 sm:w-6 sm:h-6" />
-              </button>
-              {/* Increased padding-left to pl-12 for more spacing */}
-              <input
-                type="text"
-                value={tripQuery}
-                onChange={(e) => setTripQuery(e.target.value)}
-                placeholder="Let AI Help Your Plan Perfect Getaway..."
-                className="w-full pl-14 pr-4 sm:pr-6 py-3 sm:py-4 text-base sm:text-lg border-0 focus:outline-none focus:ring-0 rounded-lg"
-              />
-            </div>
-            {/* Swapped buttons: Send on left, Mic on right */}
-            <div className="flex space-x-2">
-              <button className="bg-gray-200 text-gray-700 p-3 sm:p-4 rounded-full hover:bg-gray-300 transition-colors">
-                <Mic className="w-5 h-5 sm:w-6 sm:h-6" />
-              </button>
+        {/* ChatGPT-like Chat Interface */}
+        <div className="bg-cyan-500 rounded-xl sm:rounded-2xl shadow-xl flex flex-col w-full" style={{ maxHeight: '80vh' }}>
+          {/* Chat Messages Container */}
+          <div className="p-4 sm:p-6 space-y-4 bg-gray-50 overflow-y-auto scroll-smooth" style={{ maxHeight: 'calc(80vh - 100px)' }}>
+            {assistantMessages.map((message) => (
+              <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[85%] sm:max-w-[75%] ${message.role === 'user' ? 'flex flex-col items-end' : 'flex flex-col items-start'}`}>
+                  <div className={`px-4 py-3 rounded-2xl ${
+                    message.role === 'user' 
+                      ? 'bg-cyan-500 text-white rounded-br-md' 
+                      : message.isError 
+                        ? 'bg-red-50 text-red-800 border border-red-200 rounded-bl-md'
+                        : 'bg-cyan-100 text-gray-800 border border-gray-200 rounded-bl-md shadow-sm'
+                  }`}>
+                    <p className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
+                  </div>
+                  <span className={`text-xs text-gray-500 mt-1 px-2 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+              </div>
+            ))}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="bg-white border border-gray-200 px-4 py-3 rounded-2xl rounded-bl-md shadow-sm">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Chat Input Section */}
+          <div className="border-t border-gray-200 bg-white p-4">
+            <div className="flex items-center space-x-3">
+              <div className="flex-1 relative">
+                <input
+                  type="text"
+                  value={tripQuery}
+                  onChange={(e) => setTripQuery(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+                  placeholder="Let AI Help You Plan Your Perfect Getaway..."
+                  className="w-full px-4 py-3 pr-12 text-base border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  disabled={isLoading}
+                />
+              </div>
               <button 
-                className="bg-black text-white p-3 sm:p-4 rounded-full hover:bg-gray-800 transition-colors"
+                className="bg-cyan-500 text-white p-3 rounded-full hover:bg-cyan-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
                 onClick={handleSendMessage}
+                disabled={isLoading || !tripQuery.trim()}
               >
-                <Send className="w-5 h-5 sm:w-6 sm:h-6" />
+                {isLoading ? (
+                  <svg className="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : (
+                  <Send className="w-5 h-5" />
+                )}
               </button>
             </div>
           </div>
-
-          {/* Image Upload Section - Now conditionally rendered */}
-          {showUploadSection && (
-            <div className="mt-6 transition-all duration-300 ease-in-out">
-              <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 lg:p-8">
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6 text-center">
-                  Share Your Travel Inspiration
-                </h3>
-                <div
-                  className={`relative border-2 border-dashed rounded-lg sm:rounded-xl p-4 sm:p-6 lg:p-8 text-center transition-all duration-300 ${
-                    dragActive
-                      ? "border-cyan-400 bg-cyan-50"
-                      : selectedFile
-                        ? "border-green-400 bg-green-50"
-                        : "border-gray-300 hover:border-cyan-400 hover:bg-gray-50"
-                  }`}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                >
-                  <input type="file" id="file-upload" className="hidden" onChange={handleFileChange} accept="image/*" />
-                  {selectedFile ? (
-                    <div className="space-y-3 sm:space-y-4">
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                        <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-base sm:text-lg font-semibold text-green-600">File Selected!</p>
-                        <p className="text-sm sm:text-base text-gray-600 break-all">{selectedFile.name}</p>
-                        <p className="text-xs sm:text-sm text-gray-500">
-                          {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                        </p>
-                      </div>
-                      <button
-                        onClick={() => setSelectedFile(null)}
-                        className="text-red-500 hover:text-red-700 font-medium text-sm sm:text-base"
-                      >
-                        Remove file
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="space-y-3 sm:space-y-4">
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-cyan-100 rounded-full flex items-center justify-center mx-auto">
-                        <Upload className="w-6 h-6 sm:w-8 sm:h-8 text-cyan-600" />
-                      </div>
-                      <div>
-                        <p className="text-base sm:text-lg font-semibold text-gray-700">Drop your travel photos here</p>
-                        <p className="text-sm sm:text-base text-gray-500">or click to browse</p>
-                      </div>
-                      <label
-                        htmlFor="file-upload"
-                        className="inline-block bg-cyan-500 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg font-semibold hover:bg-cyan-600 transition-colors cursor-pointer text-sm sm:text-base"
-                      >
-                        Choose Files
-                      </label>
-                      <p className="text-xs text-gray-400">Supports: JPG, PNG, GIF up to 10MB</p>
-                    </div>
-                  )}
-                </div>
-                {selectedFile && (
-                  <div className="mt-4 sm:mt-6 flex justify-center">
-                    <button 
-                      className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-semibold hover:from-cyan-600 hover:to-blue-600 transition-all duration-300 shadow-lg text-sm sm:text-base"
-                      onClick={handleSendMessage}
-                    >
-                      Upload & Get AI Recommendations
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Botpress Chat Toggle Button */}
-        <div className="flex justify-center my-6">
-          <button
-            onClick={() => window.botpressWebChat?.toggle()}
-            className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-3 rounded-lg shadow-lg hover:from-cyan-600 hover:to-blue-600 transition"
-          >
-            Chat with our AI Assistant
-          </button>
         </div>
       </div>
 
@@ -616,6 +648,124 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Custom AI Chat Widget */}
+      {isChatOpen && (
+        <div className="fixed bottom-24 right-4 sm:right-6 w-[90vw] sm:w-96 h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col z-50 animate-slideUp">
+          {/* Chat Header */}
+          <div className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white p-4 rounded-t-2xl flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <img 
+                src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" 
+                alt="Ceyluxe AI" 
+                className="w-10 h-10 rounded-full bg-white p-1"
+              />
+              <div>
+                <h3 className="font-bold">Ceyluxe AI</h3>
+                <p className="text-xs opacity-90">Your Travel Assistant</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setIsChatOpen(false)}
+              className="text-white hover:bg-white/20 rounded-full p-1 transition"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Chat Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            {chatMessages.map((message) => (
+              <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`max-w-[80%] p-3 rounded-lg ${
+                  message.role === 'user' 
+                    ? 'bg-cyan-500 text-white rounded-br-none' 
+                    : message.isError 
+                      ? 'bg-red-100 text-red-800 rounded-bl-none'
+                      : 'bg-white text-gray-800 rounded-bl-none shadow'
+                }`}>
+                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                  <p className="text-xs opacity-70 mt-1">
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+              </div>
+            ))}
+            {isChatLoading && (
+              <div className="flex justify-start">
+                <div className="bg-white p-3 rounded-lg shadow">
+                  <div className="flex space-x-2">
+                    <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                    <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Chat Input */}
+          <div className="p-4 bg-white border-t rounded-b-2xl">
+            <div className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleChatSend()}
+                placeholder="Ask me anything..."
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:border-cyan-500"
+                disabled={isChatLoading}
+              />
+              <button
+                onClick={handleChatSend}
+                disabled={isChatLoading || !chatInput.trim()}
+                className="bg-cyan-500 text-white p-2 rounded-full hover:bg-cyan-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isChatLoading ? (
+                  <svg className="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : (
+                  <Send className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Chat Button */}
+      <button
+        onClick={() => setIsChatOpen(!isChatOpen)}
+        className="fixed bottom-6 right-4 sm:right-6 bg-gradient-to-r from-cyan-500 to-blue-500 text-white p-4 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 z-50 hover:scale-110"
+      >
+        {isChatOpen ? (
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        ) : (
+          <MessageCircle className="w-6 h-6" />
+        )}
+      </button>
+
+      <style jsx>{`
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-slideUp {
+          animation: slideUp 0.3s ease-out;
+        }
+      `}</style>
     </div>
   )
 }

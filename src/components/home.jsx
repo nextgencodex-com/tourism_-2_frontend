@@ -75,10 +75,6 @@ export default function Home() {
 
   const handleSendMessage = () => {
     if (tripQuery.trim()) {
-      console.log("Sending query:", tripQuery)
-      if (selectedFile) {
-        console.log("With attached file:", selectedFile.name)
-      }
       setTripQuery("")
       setSelectedFile(null)
       setShowUploadSection(false)

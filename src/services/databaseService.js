@@ -202,6 +202,33 @@ export const databaseService = {
     } catch (error) {
       throw error;
     }
+  },
+
+  notifications: {
+    async getAll() {
+      try {
+        const res = await apiClient('/notifications');
+        return { success: true, data: unwrap(res), error: null };
+      } catch (error) {
+        return { success: false, data: [], error: error.message };
+      }
+    },
+    async markAsRead(id) {
+      try {
+        const res = await apiClient(`/notifications/${id}/read`, { method: 'PUT' });
+        return { success: true, data: unwrap(res), error: null };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    },
+    async markAllAsRead() {
+      try {
+        const res = await apiClient('/notifications/mark-all-read', { method: 'PUT' });
+        return { success: true, data: unwrap(res), error: null };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
   }
 };
 

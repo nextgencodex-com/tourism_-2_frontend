@@ -17,12 +17,36 @@ export default function Component() {
   }, []);
   
   // Get category-specific activities
-  const currentCategoryActivities = categoryActivities[selectedCategory] || categoryActivities['beach-holidays'];
-  const day1Activities = currentCategoryActivities.day1;
-  const day2Activities = currentCategoryActivities.day2;
+  // Use package-specific activities if available, otherwise use default category activities
+  const hasCustomActivities = packageData?.activities && 
+    (packageData.activities.day1?.length > 0 || packageData.activities.day2?.length > 0);
   
-  // Get package info for the category
-  const packageInfo = categoryPackageInfo[selectedCategory] || categoryPackageInfo['beach-holidays'];
+  let day1Activities, day2Activities;
+  
+  if (hasCustomActivities) {
+    // Use custom activities from the package
+    day1Activities = packageData.activities.day1.map((activity, index) => ({
+      id: `custom-day1-${index}`,
+      name: activity.name,
+      price: activity.price
+    }));
+    day2Activities = packageData.activities.day2.map((activity, index) => ({
+      id: `custom-day2-${index}`,
+      name: activity.name,
+      price: activity.price
+    }));
+  } else {
+    // Use default category activities
+    const currentCategoryActivities = categoryActivities[selectedCategory] || categoryActivities['beach-holidays'];
+    day1Activities = currentCategoryActivities.day1;
+    day2Activities = currentCategoryActivities.day2;
+  }
+  
+  // Get package info - use actual package data if available, otherwise fallback to category defaults
+  const packageInfo = {
+    title: packageData?.title || categoryPackageInfo[selectedCategory]?.title || categoryPackageInfo['beach-holidays'].title,
+    description: packageData?.description || categoryPackageInfo[selectedCategory]?.description || categoryPackageInfo['beach-holidays'].description
+  };
   
   // Get current date and next day for default values
   const getCurrentDate = () => {

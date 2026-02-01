@@ -39,16 +39,16 @@ const Dashboard = () => {
   }, []);
 
   // Sample data for charts (will be replaced with real data from Firebase)
-  const revenueData = [
-    { month: 'Jan', revenue: 45000, bookings: 24 },
-    { month: 'Feb', revenue: 52000, bookings: 28 },
-    { month: 'Mar', revenue: 48000, bookings: 26 },
-    { month: 'Apr', revenue: 61000, bookings: 32 },
-    { month: 'May', revenue: 55000, bookings: 30 },
-    { month: 'Jun', revenue: 67000, bookings: 36 },
+  const revenueData = analytics?.revenueData || [
+    { month: 'Jan', revenue: 0, bookings: 0 },
+    { month: 'Feb', revenue: 0, bookings: 0 },
+    { month: 'Mar', revenue: 0, bookings: 0 },
+    { month: 'Apr', revenue: 0, bookings: 0 },
+    { month: 'May', revenue: 0, bookings: 0 },
+    { month: 'Jun', revenue: 0, bookings: 0 },
   ];
 
-  const packageData = [
+  const packageData = analytics?.packageData || [
     { name: 'Cultural Tours', value: 35, color: '#06B6D4' },
     { name: 'Beach Holidays', value: 28, color: '#10B981' },
     { name: 'Adventure Tours', value: 20, color: '#F59E0B' },
@@ -58,7 +58,7 @@ const Dashboard = () => {
   const stats = [
     {
       name: 'Total Revenue',
-      value: '$328,000',
+      value: `$${(analytics?.totals?.revenue || 0).toLocaleString()}`,
       change: '+12.5%',
       changeType: 'increase',
       icon: FiDollarSign,
@@ -66,7 +66,7 @@ const Dashboard = () => {
     },
     {
       name: 'Active Packages',
-      value: packages?.length?.toString() || '0',
+      value: (analytics?.totals?.packages || packages?.length || 0).toString(),
       change: '+2',
       changeType: 'increase',
       icon: FiPackage,
@@ -74,15 +74,15 @@ const Dashboard = () => {
     },
     {
       name: 'Total Customers',
-      value: analytics?.totalCustomers?.toString() || '0',
+      value: (analytics?.totals?.customers || 0).toString(),
       change: '+8.2%',
       changeType: 'increase',
       icon: FiUsers,
       color: 'bg-purple-500'
     },
     {
-      name: 'Booking Rate',
-      value: '73.2%',
+      name: 'Total Bookings',
+      value: (analytics?.totals?.bookings || 0).toString(),
       change: '+2.1%',
       changeType: 'increase',
       icon: FiTrendingUp,
@@ -91,7 +91,7 @@ const Dashboard = () => {
   ];
 
   const recentBookings = analytics?.recentBookings || [];
-  const topPackages = packages?.slice(0, 3) || [];
+  const topPackages = analytics?.topPackages?.slice(0, 3) || packages?.filter(p => p.isBestSelling || p.isKeyExperience)?.slice(0, 3) || [];
 
   if (isLoading) {
     return (
@@ -182,6 +182,7 @@ const Dashboard = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis dataKey="month" stroke="#6b7280" />
               <YAxis stroke="#6b7280" />
+              <YAxis yAxisId="right" orientation="right" stroke="#6b7280" />
               <Tooltip 
                 contentStyle={{
                   backgroundColor: 'white',
@@ -196,6 +197,7 @@ const Dashboard = () => {
                 stroke="#06b6d4" 
                 strokeWidth={3}
                 dot={{ fill: '#06b6d4', strokeWidth: 2, r: 4 }}
+                name="Revenue ($)"
               />
               <Line 
                 type="monotone" 
@@ -204,6 +206,7 @@ const Dashboard = () => {
                 strokeWidth={3}
                 dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
                 yAxisId="right"
+                name="Bookings"
               />
             </LineChart>
           </ResponsiveContainer>
@@ -277,20 +280,22 @@ const Dashboard = () => {
                     <div className="flex items-center space-x-3">
                       <div className="h-10 w-10 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center">
                         <span className="text-white text-sm font-medium">
-                          {booking.customerName?.charAt(0) || 'N'}
+                          {(booking.customerName || booking.name)?.charAt(0) || 'N'}
                         </span>
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{booking.customerName || 'No Name'}</p>
-                        <p className="text-sm text-gray-500">{booking.packageTitle || 'Unknown Package'}</p>
+                        <p className="text-sm font-medium text-gray-900">{booking.customerName || booking.name || 'No Name'}</p>
+                        <p className="text-sm text-gray-500">{booking.packageTitle || booking.packageName || 'Unknown Package'}</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">${booking.amount || '0'}</p>
+                      <p className="text-sm font-medium text-gray-900">${(booking.totalPrice || booking.amount || 0).toLocaleString()}</p>
                       <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                         booking.status === 'confirmed' 
                           ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
+                          : booking.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-gray-100 text-gray-800'
                       }`}>
                         {booking.status || 'pending'}
                       </span>

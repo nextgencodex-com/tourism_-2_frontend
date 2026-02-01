@@ -1,14 +1,113 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePublicPackages } from '../context/PublicPackagesContext';
+import LocalImage from './LocalImage';
 
 export default function KeyExperiencesPage() {
   const navigate = useNavigate();
+  const { packages, isLoading } = usePublicPackages();
+  const [allExperiences, setAllExperiences] = useState([]);
   
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
   
+  // Hardcoded experiences
+  const hardcodedExperiences = [
+    {
+      id: 'hardcoded-1',
+      title: "Cultural Heritage",
+      description: "Immerse yourself in Sri Lanka's rich cultural heritage with visits to ancient temples, historical sites, and traditional ceremonies.",
+      image: "/images/cultural-1.jpg",
+      highlights: ["Temple of the Sacred Tooth Relic", "Ancient City of Polonnaruwa", "Traditional Dance Performances", "Local Artisan Workshops"],
+      duration: "2-3 days",
+      price: "From $150",
+      categoryUrl: "cultural-heritage",
+      isHardcoded: true
+    },
+    {
+      id: 'hardcoded-2',
+      title: "Wildlife Safari",
+      description: "Experience the thrill of spotting elephants, leopards, and exotic birds in their natural habitat across Sri Lanka's national parks.",
+      image: "/images/wildlife-1.jpg",
+      highlights: ["Yala National Park Safari", "Udawalawe Elephant Gathering", "Bird Watching Tours", "Conservation Education"],
+      duration: "1-2 days",
+      price: "From $120",
+      categoryUrl: "wildlife-nature",
+      isHardcoded: true
+    },
+    {
+      id: 'hardcoded-3',
+      title: "Tea Plantation Tours",
+      description: "Discover the world-famous Ceylon tea with guided tours through lush tea estates in the misty highlands.",
+      image: "/images/misty.jpg",
+      highlights: ["Tea Factory Visits", "Tea Tasting Sessions", "Plantation Walks", "Traditional Tea Making"],
+      duration: "1 day",
+      price: "From $80",
+      categoryUrl: "adventure-tours",
+      isHardcoded: true
+    },
+    {
+      id: 'hardcoded-4',
+      title: "Beach & Water Sports",
+      description: "Enjoy pristine beaches and exciting water activities along Sri Lanka's stunning coastline.",
+      image: "/images/beach-1.jpg",
+      highlights: ["Surfing Lessons", "Snorkeling Adventures", "Whale Watching", "Beach Yoga Sessions"],
+      duration: "2-4 days",
+      price: "From $200",
+      categoryUrl: "beach-holidays",
+      isHardcoded: true
+    },
+    {
+      id: 'hardcoded-5',
+      title: "Ayurveda & Wellness",
+      description: "Rejuvenate your mind and body with traditional Ayurvedic treatments and wellness programs.",
+      image: "/images/wellness-1.jpg",
+      highlights: ["Ayurvedic Consultations", "Traditional Massages", "Meditation Sessions", "Herbal Medicine"],
+      duration: "3-7 days",
+      price: "From $300",
+      categoryUrl: "pilgrimage-tours",
+      isHardcoded: true
+    },
+    {
+      id: 'hardcoded-6',
+      title: "Adventure Sports",
+      description: "Get your adrenaline pumping with thrilling adventure activities in Sri Lanka's diverse landscapes.",
+      image: "/images/wellness-2.jpg",
+      highlights: ["Rock Climbing", "White Water Rafting", "Zip Lining", "Mountain Biking"],
+      duration: "1-3 days",
+      price: "From $100",
+      categoryUrl: "adventure-tours",
+      isHardcoded: true
+    }
+  ];
+
+  // Combine hardcoded and database packages marked as key experiences
+  useEffect(() => {
+    if (packages && packages.length > 0) {
+      const keyExperiencePackages = packages
+        .filter(pkg => pkg.isKeyExperience && pkg.status === 'active')
+        .map(pkg => ({
+          id: pkg.id,
+          title: pkg.title,
+          description: pkg.description,
+          image: pkg.images && pkg.images[0] ? pkg.images[0] : '/images/placeholder.jpg',
+          highlights: pkg.highlights || [],
+          duration: pkg.duration,
+          price: `From $${pkg.price}`,
+          categoryUrl: pkg.category,
+          isHardcoded: false
+        }));
+      
+      // Combine hardcoded experiences first, then database packages
+      setAllExperiences([...hardcodedExperiences, ...keyExperiencePackages]);
+    } else {
+      // If no packages loaded yet or none marked as key experiences, show only hardcoded
+      setAllExperiences(hardcodedExperiences);
+    }
+  }, [packages]);
+
   const navigateToAI = () => {
     navigate('/');
     setTimeout(() => {
@@ -16,8 +115,12 @@ export default function KeyExperiencesPage() {
     }, 100);
   };
 
-  const handleBookNow = (categoryUrl) => {
-    navigate(`/planning/category/${categoryUrl}`);
+  const handleBookNow = (experience) => {
+    if (experience.isHardcoded) {
+      navigate(`/planning/category/${experience.categoryUrl}`);
+    } else {
+      navigate(`/planning/package/${experience.id}`);
+    }
   };
 
   const experiences = [
@@ -81,7 +184,18 @@ export default function KeyExperiencesPage() {
       price: "From $100",
       categoryUrl: "adventure-tours"
     }
-  ];
+  ]; // This will be removed after confirming the merge works
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block w-8 h-8 border-4 border-cyan-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-gray-600">Loading experiences...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -145,14 +259,23 @@ export default function KeyExperiencesPage() {
 
         {/* Experiences Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {experiences.map((experience) => (
+          {allExperiences.map((experience) => (
             <div key={experience.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
               <div className="relative h-48">
-                <img 
-                  src={experience.image} 
-                  alt={experience.title} 
-                  className="w-full h-full object-cover"
-                />
+                {experience.isHardcoded ? (
+                  <img 
+                    src={experience.image} 
+                    alt={experience.title} 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <LocalImage
+                    src={experience.image}
+                    alt={experience.title}
+                    className="w-full h-full object-cover"
+                    fallback="/images/placeholder.jpg"
+                  />
+                )}
                 <div className="absolute top-4 left-4">
                   <span className="bg-cyan-400 text-white px-3 py-1 rounded-full text-sm font-semibold">
                     {experience.duration}
@@ -191,7 +314,7 @@ export default function KeyExperiencesPage() {
                   </button>
                   <button 
                     className="flex-1 border border-cyan-400 text-cyan-400 py-2 px-4 rounded-lg font-semibold hover:bg-cyan-400 hover:text-white transition-colors"
-                    onClick={() => handleBookNow(experience.categoryUrl)}
+                    onClick={() => handleBookNow(experience)}
                   >
                     Book Now
                   </button>

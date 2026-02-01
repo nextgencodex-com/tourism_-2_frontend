@@ -18,6 +18,13 @@ export const PackageProvider = ({ children }) => {
 
   useEffect(() => {
     loadPackages();
+    
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      loadPackages();
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const loadPackages = async () => {
@@ -45,7 +52,7 @@ export const PackageProvider = ({ children }) => {
     try {
       const result = await databaseService.packages.create(packageData);
       if (result.success) {
-        setPackages((prev) => [...prev, result.data]);
+        await loadPackages(); // Reload all packages to ensure consistency
         return { success: true, data: result.data };
       } else {
         setError(result.error);
@@ -67,7 +74,7 @@ export const PackageProvider = ({ children }) => {
     try {
       const result = await databaseService.packages.update(id, packageData);
       if (result.success) {
-        setPackages((prev) => prev.map((pkg) => (pkg.id === id ? result.data : pkg)));
+        await loadPackages(); // Reload all packages to ensure consistency
         return { success: true, data: result.data };
       } else {
         setError(result.error);
@@ -89,7 +96,7 @@ export const PackageProvider = ({ children }) => {
     try {
       const result = await databaseService.packages.delete(id);
       if (result.success) {
-        setPackages((prev) => prev.filter((pkg) => pkg.id !== id));
+        await loadPackages(); // Reload all packages to ensure consistency
         return { success: true };
       } else {
         setError(result.error);

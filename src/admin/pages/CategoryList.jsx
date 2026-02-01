@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCategories } from '../../context/CategoryContext';
+import { usePackages } from '../context/PackageContext';
 import { motion } from 'framer-motion';
-import { FiPlus, FiEdit, FiTrash2, FiTag, FiEye } from 'react-icons/fi';
+import { FiPlus, FiEdit, FiTrash2, FiTag, FiEye, FiAlertTriangle } from 'react-icons/fi';
 import LocalImage from '../../components/LocalImage';
 
 export default function CategoryList() {
@@ -15,9 +16,11 @@ export default function CategoryList() {
     error,
     staticCategories 
   } = useCategories();
+  const { packages } = usePackages();
   
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [packageCount, setPackageCount] = useState(0);
   const [activeTab, setActiveTab] = useState('dynamic'); // 'dynamic' or 'all'
 
   useEffect(() => {
@@ -33,6 +36,10 @@ export default function CategoryList() {
       alert('Cannot delete static categories!');
       return;
     }
+    
+    // Count packages in this category
+    const count = packages.filter(pkg => pkg.category === category.id).length;
+    setPackageCount(count);
     setCategoryToDelete(category);
     setShowDeleteModal(true);
   };
@@ -257,11 +264,30 @@ export default function CategoryList() {
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3 text-center">
-              <FiTrash2 className="mx-auto mb-4 h-12 w-12 text-red-600" />
-              <h3 className="text-lg font-medium text-gray-900">Delete Category</h3>
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <FiAlertTriangle className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mt-4">Delete Category</h3>
               <div className="mt-2 px-7 py-3">
-                <p className="text-sm text-gray-500">
-                  Are you sure you want to delete "{categoryToDelete?.title}"? 
+                <p className="text-sm text-gray-500 mb-3">
+                  Are you sure you want to delete "{categoryToDelete?.title}"?
+                </p>
+                {packageCount > 0 && (
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
+                    <div className="flex items-start">
+                      <FiAlertTriangle className="h-5 w-5 text-orange-600 mt-0.5 mr-2 flex-shrink-0" />
+                      <div className="text-left">
+                        <p className="text-sm font-medium text-orange-800">
+                          Warning: {packageCount} package{packageCount > 1 ? 's' : ''} will be deleted
+                        </p>
+                        <p className="text-xs text-orange-700 mt-1">
+                          All tour packages in this category will be permanently deleted.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <p className="text-sm text-gray-600 font-medium">
                   This action cannot be undone.
                 </p>
               </div>
@@ -276,7 +302,7 @@ export default function CategoryList() {
                   onClick={confirmDelete}
                   className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                 >
-                  Delete
+                  Delete Category{packageCount > 0 ? ` & ${packageCount} Package${packageCount > 1 ? 's' : ''}` : ''}
                 </button>
               </div>
             </div>

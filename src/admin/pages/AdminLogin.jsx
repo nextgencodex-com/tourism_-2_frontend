@@ -48,7 +48,7 @@ const AdminLogin = () => {
       <div className="pt-4 sm:pt-6 px-4 sm:px-8">
         <div className="flex justify-center">
           <img 
-            src="/images/logo1.png" 
+            src="/images/logo.png" 
             alt="Ceyluxe Logo" 
             className="h-24 sm:h-32 w-auto object-contain"
           />
@@ -153,12 +153,7 @@ const AdminLogin = () => {
                 </motion.div>
               )}
 
-              {/* Demo Credentials */}
-              <div className="bg-cyan-50 border border-cyan-200 text-cyan-700 px-4 py-3 rounded-lg text-sm">
-                <p className="font-medium mb-1">Demo Credentials:</p>
-                <p>Email: admin@ceyluxe.com</p>
-                <p>Password: admin123</p>
-              </div>
+              
 
               {/* Submit Button - matching your site's button style */}
               <motion.button

@@ -71,6 +71,13 @@ export const CategoryProvider = ({ children }) => {
 
   useEffect(() => {
     loadCategories();
+    
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      loadCategories();
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const loadCategories = async () => {
@@ -95,7 +102,7 @@ export const CategoryProvider = ({ children }) => {
       setError(null);
       
       const newCategory = await databaseService.addCategory(categoryData);
-      setCategories((prev) => [...prev, { ...newCategory, isStatic: false }]);
+      await loadCategories(); // Reload all categories to ensure consistency
       return newCategory;
     } catch (err) {
       setError(err.message);
@@ -113,7 +120,7 @@ export const CategoryProvider = ({ children }) => {
       if (currentCategory && !currentCategory.isStatic) {
         // Direct update - let Firebase handle existence checking
         const updatedCategory = await databaseService.updateCategory(categoryId, categoryData);
-        setCategories((prev) => prev.map((cat) => (cat.id === categoryId ? { ...updatedCategory, isStatic: false } : cat)));
+        await loadCategories(); // Reload all categories to ensure consistency
         
         return updatedCategory;
       } else {
@@ -141,10 +148,7 @@ export const CategoryProvider = ({ children }) => {
       if (currentCategory && !currentCategory.isStatic) {
         // Direct delete - let Firebase handle existence checking
         await databaseService.deleteCategory(categoryId);
-        setCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
-        setTimeout(() => {
-          loadCategories();
-        }, 500);
+        await loadCategories(); // Reload all categories to ensure consistency
       } else {
         if (currentCategory?.isStatic) {
           throw new Error('Cannot delete static categories');

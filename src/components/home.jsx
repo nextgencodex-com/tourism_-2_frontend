@@ -117,19 +117,6 @@ export default function Home() {
 
   const handleSendMessage = async () => {
     if (tripQuery.trim()) {
-      console.log("Sending query:", tripQuery)
-      const currentQuery = tripQuery
-      
-      setAssistantMessages(prev => {
-        const userMessage = {
-          id: prev.length + 1,
-          role: 'user',
-          content: currentQuery,
-          timestamp: new Date(),
-        }
-        return [...prev, userMessage]
-      })
-      
       setTripQuery("")
       setIsLoading(true)
       setError(null)

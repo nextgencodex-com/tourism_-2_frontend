@@ -19,7 +19,6 @@ export const PublicPackagesProvider = ({ children }) => {
   useEffect(() => {
     const fetchPackages = async () => {
       try {
-        setIsLoading(true);
         const result = await databaseService.packages.getAll();
         if (result.success) {
           const activePackages = result.data.filter((pkg) => pkg.status === 'active');
@@ -36,6 +35,13 @@ export const PublicPackagesProvider = ({ children }) => {
     };
 
     fetchPackages();
+    
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchPackages();
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   // Get packages by category

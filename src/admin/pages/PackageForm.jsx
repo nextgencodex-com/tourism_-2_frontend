@@ -55,9 +55,14 @@ const PackageForm = () => {
         price: ''
       }
     ],
+    activities: {
+      day1: [],
+      day2: []
+    },
     images: [],
     status: 'active',
-    bestSelling: false
+    bestSelling: false,
+    isKeyExperience: false
   });
 
   const [errors, setErrors] = useState({});
@@ -93,7 +98,9 @@ const PackageForm = () => {
                 price: ''
               }
             ],
+            activities: existingPackage.activities || { day1: [], day2: [] },
             bestSelling: existingPackage.bestSelling || false,
+            isKeyExperience: existingPackage.isKeyExperience || false,
             images: existingPackage.images ? existingPackage.images.map((url, index) => ({
               id: index,
               url: url,
@@ -222,6 +229,39 @@ const PackageForm = () => {
       ...prev,
       hotels: prev.hotels.filter((_, i) => i !== index)
         .map((hotel, i) => ({ ...hotel, day: i + 1 }))
+    }));
+  };
+
+  // Activities handlers
+  const handleActivityChange = (day, index, field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      activities: {
+        ...prev.activities,
+        [day]: prev.activities[day].map((activity, i) => 
+          i === index ? { ...activity, [field]: value } : activity
+        )
+      }
+    }));
+  };
+
+  const addActivity = (day) => {
+    setFormData(prev => ({
+      ...prev,
+      activities: {
+        ...prev.activities,
+        [day]: [...prev.activities[day], { name: '', price: '' }]
+      }
+    }));
+  };
+
+  const removeActivity = (day, index) => {
+    setFormData(prev => ({
+      ...prev,
+      activities: {
+        ...prev.activities,
+        [day]: prev.activities[day].filter((_, i) => i !== index)
+      }
     }));
   };
 
@@ -504,7 +544,7 @@ const PackageForm = () => {
               {errors.maxGuests && <p className="mt-1 text-sm text-red-600">{errors.maxGuests}</p>}
             </div>
 
-            {/* Status and Best Selling */}
+            {/* Status, Best Selling, and Key Experience */}
             <div className="md:col-span-2 flex flex-wrap gap-6">
               <label className="flex items-center">
                 <input
@@ -515,6 +555,16 @@ const PackageForm = () => {
                   className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                 />
                 <span className="ml-2 text-sm text-gray-700">Best Selling Tour Package</span>
+              </label>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="isKeyExperience"
+                  checked={formData.isKeyExperience}
+                  onChange={handleInputChange}
+                  className="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-gray-300 rounded"
+                />
+                <span className="ml-2 text-sm text-gray-700">Key Experience Package</span>
               </label>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
@@ -803,6 +853,117 @@ const PackageForm = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </motion.div>
+
+        {/* Activities Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="bg-white p-6 rounded-lg shadow-sm border border-gray-200"
+        >
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Package Activities</h3>
+          <p className="text-sm text-gray-600 mb-4">Add custom activities for this package. These will be displayed when customers customize their tour.</p>
+          
+          {/* Day 1 Activities */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-medium text-gray-700">Day 1 Activities</h4>
+              <button
+                type="button"
+                onClick={() => addActivity('day1')}
+                className="inline-flex items-center px-3 py-2 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors duration-200"
+              >
+                <FiPlus className="h-4 w-4 mr-1" />
+                Add Activity
+              </button>
+            </div>
+            <div className="space-y-3">
+              {formData.activities.day1.map((activity, index) => (
+                <div key={index} className="flex items-center space-x-3">
+                  <input
+                    type="text"
+                    value={activity.name}
+                    onChange={(e) => handleActivityChange('day1', index, 'name', e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Activity name (e.g., Snorkeling with Sea Turtles)"
+                  />
+                  <div className="relative w-32">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <FiDollarSign className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      value={activity.price}
+                      onChange={(e) => handleActivityChange('day1', index, 'price', e.target.value)}
+                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="40$"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeActivity('day1', index)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                  >
+                    <FiTrash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+              {formData.activities.day1.length === 0 && (
+                <p className="text-sm text-gray-500 italic">No activities added for Day 1</p>
+              )}
+            </div>
+          </div>
+
+          {/* Day 2 Activities */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-medium text-gray-700">Day 2 Activities</h4>
+              <button
+                type="button"
+                onClick={() => addActivity('day2')}
+                className="inline-flex items-center px-3 py-2 text-sm text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors duration-200"
+              >
+                <FiPlus className="h-4 w-4 mr-1" />
+                Add Activity
+              </button>
+            </div>
+            <div className="space-y-3">
+              {formData.activities.day2.map((activity, index) => (
+                <div key={index} className="flex items-center space-x-3">
+                  <input
+                    type="text"
+                    value={activity.name}
+                    onChange={(e) => handleActivityChange('day2', index, 'name', e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Activity name (e.g., Whale Watching Tour)"
+                  />
+                  <div className="relative w-32">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <FiDollarSign className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <input
+                      type="text"
+                      value={activity.price}
+                      onChange={(e) => handleActivityChange('day2', index, 'price', e.target.value)}
+                      className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="60$"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeActivity('day2', index)}
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                  >
+                    <FiTrash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              ))}
+              {formData.activities.day2.length === 0 && (
+                <p className="text-sm text-gray-500 italic">No activities added for Day 2</p>
+              )}
+            </div>
           </div>
         </motion.div>
 

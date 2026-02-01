@@ -66,12 +66,43 @@ export default function CategoryForm() {
       .replace(/^-|-$/g, '');
   };
 
+  const generateDefaultDescription = (title) => {
+    // Generate a meaningful description based on the title
+    const lowerTitle = title.toLowerCase();
+    if (lowerTitle.includes('beach')) {
+      return "Discover pristine beaches with crystal-clear waters and exciting water activities";
+    } else if (lowerTitle.includes('adventure')) {
+      return "Thrilling experiences with outdoor activities and extreme sports";
+    } else if (lowerTitle.includes('cultural') || lowerTitle.includes('heritage')) {
+      return "Explore ancient temples, traditions, and rich cultural experiences";
+    } else if (lowerTitle.includes('wildlife') || lowerTitle.includes('nature')) {
+      return "Encounter diverse wildlife and explore stunning natural habitats";
+    } else if (lowerTitle.includes('honeymoon') || lowerTitle.includes('romantic')) {
+      return "Perfect romantic experiences for couples and newlyweds";
+    } else if (lowerTitle.includes('family')) {
+      return "Fun-filled family activities and memorable experiences for all ages";
+    } else if (lowerTitle.includes('pilgrimage') || lowerTitle.includes('spiritual')) {
+      return "Sacred sites and spiritual journeys across Sri Lanka";
+    } else {
+      return `Experience the best of ${title} in Sri Lanka`;
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    if (name === 'title' && !isEditing && !formData.description) {
+      // Auto-generate description when creating new category
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        description: generateDefaultDescription(value)
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleImageMethodChange = (method) => {

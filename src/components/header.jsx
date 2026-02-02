@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
-import { Menu, X, Settings } from "lucide-react"
+import { Menu, X } from "lucide-react"
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -54,16 +54,8 @@ export default function Header() {
           </nav>
         </div>
 
-        {/* Admin Access Button - Desktop (right side) */}
-        <div className="hidden md:block">
-          <button
-            onClick={() => navigate('/admin/login')}
-            className="bg-gray-800 hover:bg-gray-900 text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-105"
-            title="Admin Dashboard"
-          >
-            <Settings className="w-5 h-5" />
-          </button>
-        </div>
+        {/* Spacer for alignment - Desktop (right side) */}
+        <div className="hidden md:block w-14"></div>
 
         {/* Mobile Layout - Logo centered */}
         <div className="md:hidden flex-1 flex justify-center">
@@ -74,7 +66,7 @@ export default function Header() {
           />
         </div>
 
-        {/* Mobile Menu Button - Right Side (Removed Settings icon, only Menu toggle remains) */}
+        {/* Mobile Menu Button - Right Side */}
         <div className="md:hidden flex items-center">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -108,20 +100,6 @@ export default function Header() {
                     {item.name}
                   </button>
                 ))}
-                
-                {/* Admin Access in Mobile Menu - Removed text, only Settings icon */}
-                <div className="pt-3 border-t border-white/20">
-                  <button
-                    onClick={() => {
-                      navigate('/admin/login');
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="w-full text-center px-4 py-3 text-base font-medium transition-all duration-300 rounded-xl bg-gray-800/80 text-white hover:bg-gray-800 border border-gray-600/50 flex items-center justify-center"
-                    title="Admin Dashboard"
-                  >
-                    <Settings className="w-5 h-5" />
-                  </button>
-                </div>
               </div>
             </div>
           </div>

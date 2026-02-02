@@ -3,14 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { usePublicPackages } from '../context/PublicPackagesContext';
 import { useCategories } from '../context/CategoryContext';
 import LocalImage from './LocalImage';
-import { getImageUrl } from '../services/apiClient';
 import AIChatPlanner from './ai-chat-planner';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 export default function PlanningTripPage() {
   const navigate = useNavigate();
   const { getBestSellingPackages } = usePublicPackages();
   const { getAllCategories, isLoading: categoriesLoading } = useCategories();
   const [bestSellingPackages, setBestSellingPackages] = useState([]);
+  const [showAllCategories, setShowAllCategories] = useState(false);
 
   const WHATSAPP_NUMBER = '94774488732'; // 0774488732 in international format
   const openWhatsApp = (customMessage) => {
@@ -27,6 +28,10 @@ export default function PlanningTripPage() {
 
   // Get all categories (static + dynamic)
   const tourCategories = getAllCategories();
+  
+  // Get first 2 categories for mobile
+  const firstTwoCategories = tourCategories.slice(0, 2);
+  const remainingCategories = tourCategories.slice(2);
 
   // Load best selling packages from database (dynamic only)
   useEffect(() => {
@@ -117,37 +122,55 @@ export default function PlanningTripPage() {
               <p className="text-gray-600">No categories available</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {tourCategories.map((category) => (
-                <Link 
-                  key={category.id}
-                  to={`/planning/category/${category.id}`}
-                  className="group h-full"
-                >
-                  <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 h-full flex flex-col">
-                    <div className="relative h-48 overflow-hidden flex-shrink-0">
-                      <LocalImage
-                        src={category.image}
-                        alt={category.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                        fallback="/images/placeholder.jpg"
-                      />
-                    </div>
-                    <div className="p-6 flex flex-col flex-grow">
-                      <h3 className={`text-xl font-bold mb-2 ${category.color || 'text-cyan-400'}`}>
-                        {category.title}
-                      </h3>
-                      <p className="text-gray-600 text-sm mb-4 flex-grow line-clamp-3">
-                        {category.description}
-                      </p>
-                      <div className={`flex items-center font-medium text-sm group-hover:underline ${category.color || 'text-cyan-400'} mt-auto`}>
-                        Explore Packages →
-                      </div>
-                    </div>
+            <>
+              {/* Desktop & Tablet: Show all categories */}
+              <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {tourCategories.map((category) => (
+                  <CategoryCard key={category.id} category={category} />
+                ))}
+              </div>
+
+              {/* Mobile: Show first 2 + toggle for remaining */}
+              <div className="md:hidden">
+                {/* First 2 categories - always shown */}
+                <div className="grid grid-cols-1 gap-6 mb-6">
+                  {firstTwoCategories.map((category) => (
+                    <CategoryCard key={category.id} category={category} />
+                  ))}
+                </div>
+
+                {/* Remaining categories - conditionally shown */}
+                {showAllCategories && remainingCategories.length > 0 && (
+                  <div className="grid grid-cols-1 gap-6 mb-6">
+                    {remainingCategories.map((category) => (
+                      <CategoryCard key={category.id} category={category} />
+                    ))}
                   </div>
-                </Link>
-              ))}
-            </div>
+                )}
+
+                {/* Show toggle button only if there are more than 2 categories */}
+                {remainingCategories.length > 0 && (
+                  <div className="flex justify-center mt-6">
+                    <button
+                      onClick={() => setShowAllCategories(!showAllCategories)}
+                      className="flex items-center justify-center gap-2 bg-cyan-400 text-white px-6 py-3 rounded-full font-medium hover:bg-cyan-500 transition-all duration-300 shadow-md"
+                    >
+                      {showAllCategories ? (
+                        <>
+                          Show Less Categories
+                          <ChevronUp className="w-5 h-5" />
+                        </>
+                      ) : (
+                        <>
+                          Show More Categories
+                          <ChevronDown className="w-5 h-5" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
 
@@ -267,4 +290,36 @@ export default function PlanningTripPage() {
       </div>
     </div>
   );
-} 
+}
+
+// Category Card Component for reusability
+function CategoryCard({ category }) {
+  return (
+    <Link 
+      to={`/planning/category/${category.id}`}
+      className="group h-full"
+    >
+      <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 h-full flex flex-col">
+        <div className="relative h-48 overflow-hidden flex-shrink-0">
+          <LocalImage
+            src={category.image}
+            alt={category.title}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            fallback="/images/placeholder.jpg"
+          />
+        </div>
+        <div className="p-6 flex flex-col flex-grow">
+          <h3 className={`text-xl font-bold mb-2 ${category.color || 'text-cyan-400'}`}>
+            {category.title}
+          </h3>
+          <p className="text-gray-600 text-sm mb-4 flex-grow line-clamp-3">
+            {category.description}
+          </p>
+          <div className={`flex items-center font-medium text-sm group-hover:underline ${category.color || 'text-cyan-400'} mt-auto`}>
+            Explore Packages →
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}

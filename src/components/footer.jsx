@@ -1,6 +1,6 @@
 "use client"
 
-import { Facebook, Instagram, Twitter, Youtube } from 'lucide-react'
+import { Facebook, Instagram, Twitter, Youtube, Settings } from 'lucide-react'
 import { useNavigate } from "react-router-dom"
 
 export default function Footer() {
@@ -23,6 +23,11 @@ export default function Footer() {
     youtube: "https://youtube.com"
   }
 
+  // Handle admin navigation
+  const handleAdminClick = () => {
+    navigate('/admin/login')
+  }
+
   return (
     <footer className="relative mt-16 sm:mt-20 lg:mt-24">
       <div className="mx-4 sm:mx-6 lg:mx-8 mb-8">
@@ -42,7 +47,7 @@ export default function Footer() {
             {/* Content */}
             <div className="absolute inset-0 flex flex-col justify-between p-6 sm:p-8 lg:p-12">
 
-              {/* TOP NAV */}
+              {/* TOP NAV - NO ADMIN LINK HERE */}
               <nav className="flex flex-wrap justify-center gap-4 sm:gap-6 lg:gap-8 mb-8">
                 {navItems.map((item, index) => (
                   <div key={item.name} className="flex items-center gap-2">
@@ -72,9 +77,56 @@ export default function Footer() {
                 </p>
               </div>
 
-              {/* BOTTOM */}
-              <div className="flex flex-col -space-y-12">
+              {/* BOTTOM - FIXED: Mobile normal spacing, Desktop overlapping */}
+              
+              {/* Mobile View (Normal spacing) */}
+              <div className="md:hidden flex flex-col">
+                {/* Logo + Copyright */}
+                <div className="flex flex-col items-center gap-4 mb-4">
+                  <img
+                    src="/images/logo.png"
+                    alt="Ceyluxe Logo"
+                    className="h-20 w-auto object-contain drop-shadow-lg"
+                  />
+                  <div className="text-center">
+                    <p className="text-white text-sm font-medium drop-shadow-md">
+                      CONCEPT AND DESIGN BY <span className="font-bold">NextGen CodeX PVT LTD</span>
+                    </p>
+                    <p className="text-white/80 text-xs mt-1">
+                      © {new Date().getFullYear()} Ceyluxe Journeys. All rights reserved.
+                    </p>
+                  </div>
+                </div>
 
+                {/* SOCIAL ICONS + SETTINGS ICON */}
+                <div className="flex justify-center">
+                  <div className="flex gap-4">
+                    <a href={social.facebook} target="_blank" rel="noopener noreferrer" className="text-white hover:text-cyan-200 transition-colors">
+                      <Facebook className="w-6 h-6" />
+                    </a>
+                    <a href={social.instagram} target="_blank" rel="noopener noreferrer" className="text-white hover:text-cyan-200 transition-colors">
+                      <Instagram className="w-6 h-6" />
+                    </a>
+                    <a href={social.twitter} target="_blank" rel="noopener noreferrer" className="text-white hover:text-cyan-200 transition-colors">
+                      <Twitter className="w-6 h-6" />
+                    </a>
+                    <a href={social.youtube} target="_blank" rel="noopener noreferrer" className="text-white hover:text-cyan-200 transition-colors">
+                      <Youtube className="w-6 h-6" />
+                    </a>
+                    {/* Settings Icon for Admin */}
+                    <button
+                      onClick={handleAdminClick}
+                      className="text-white hover:text-cyan-200 transition-colors"
+                      title="Admin Dashboard"
+                    >
+                      <Settings className="w-6 h-6" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Desktop View (Original overlapping style) */}
+              <div className="hidden md:flex flex-col -space-y-12">
                 {/* Logo + Copyright */}
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-6">
                   <img
@@ -82,7 +134,6 @@ export default function Footer() {
                     alt="Ceyluxe Logo"
                     className="h-20 w-auto object-contain drop-shadow-lg"
                   />
-
                   <div className="text-center sm:text-right">
                     <p className="text-white text-sm font-medium drop-shadow-md">
                       CONCEPT AND DESIGN BY <span className="font-bold">NextGen CodeX PVT LTD</span>
@@ -93,30 +144,33 @@ export default function Footer() {
                   </div>
                 </div>
 
-                {/* SOCIAL ICONS */}
+                {/* SOCIAL ICONS + SETTINGS ICON */}
                 <div className="flex justify-center mt-6">
                   <div className="flex gap-4">
-
                     <a href={social.facebook} target="_blank" rel="noopener noreferrer" className="text-white hover:text-cyan-200 transition-colors">
                       <Facebook className="w-6 h-6" />
                     </a>
-
                     <a href={social.instagram} target="_blank" rel="noopener noreferrer" className="text-white hover:text-cyan-200 transition-colors">
                       <Instagram className="w-6 h-6" />
                     </a>
-
                     <a href={social.twitter} target="_blank" rel="noopener noreferrer" className="text-white hover:text-cyan-200 transition-colors">
                       <Twitter className="w-6 h-6" />
                     </a>
-
                     <a href={social.youtube} target="_blank" rel="noopener noreferrer" className="text-white hover:text-cyan-200 transition-colors">
                       <Youtube className="w-6 h-6" />
                     </a>
-
+                    {/* Settings Icon for Admin */}
+                    <button
+                      onClick={handleAdminClick}
+                      className="text-white hover:text-cyan-200 transition-colors"
+                      title="Admin Dashboard"
+                    >
+                      <Settings className="w-6 h-6" />
+                    </button>
                   </div>
                 </div>
-
               </div>
+
             </div>
           </div>
 

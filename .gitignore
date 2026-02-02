@@ -28,3 +28,4 @@ dist.zip
 *.njsproj
 *.sln
 *.sw?
+config.bat

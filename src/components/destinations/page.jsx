@@ -1,8 +1,10 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import { ChevronDown, ChevronUp } from "lucide-react"
 
 export default function PopularDestinations() {
   const navigate = useNavigate();
+  const [showAll, setShowAll] = useState(false);
   
   // Scroll to top when component mounts
   useEffect(() => {
@@ -10,103 +12,107 @@ export default function PopularDestinations() {
   }, []);
   
   const destinations = [
-        {
-          id: 1,
-          title: "Sigiriya Rock Fortress",
-          description:
-            "Explore Sri Lanka's iconic Lion Rock fortress with palace ruins, ancient frescoes, and sweeping views over the jungle landscape.",
-          image: "/images/sigiriya cover.jpg",
-          alt: "Sigiriya Rock Fortress with ancient ruins",
-        },
-        {
-          id: 2,
-          title: "Ella",
-          description:
-            "A peaceful hill country town famous for Little Adam's Peak, Nine Arch Bridge, tea plantations, and scenic train rides.",
-          image: "/images/ella cover.jpg",
-          alt: "Ella hill country with green tea plantations",
-        },
-        {
-          id: 3,
-          title: "Yala National Park",
-          description:
-            "Go on a thrilling safari to see leopards, elephants, sloth bears, and hundreds of bird species in Sri Lanka's most popular national park.",
-          image: "/images/yala.jpg",
-          alt: "Leopard in Yala National Park",
-        },
-        {
-          id: 4,
-          title: "Mirissa Beach",
-          description:
-            "Perfect for whale watching, surfing, and relaxing under palm trees—Mirissa is a vibrant beach getaway on the south coast.",
-          image: "/images/coconut-hill.jpg",
-          alt: "Mirissa Beach sunset with palm trees",
-        },
-        {
-          id: 5,
-          title: "Dambulla Cave Temple",
-          description:
-            "A series of golden cave temples with more than 150 Buddha statues and ancient murals—a spiritual and artistic treasure.",
-          image: "/images/cave cover.jpg",
-          alt: "Golden Buddha statues in Dambulla Cave Temple",
-        },
-        {
-          id: 6,
-          title: "Pidurangala Rock",
-          description:
-            "Just next to Sigiriya, this lesser-known rock offers an amazing panoramic view of Lion Rock—especially at sunrise.",
-          image: "/images/pidurangala cover.jpg",
-          alt: "Hikers on Pidurangala Rock with mountain views",
-        },
-        {
-          id: 7,
-          title: "Kandy",
-          description:
-            "The cultural capital of Sri Lanka, home to the Temple of the Sacred Tooth Relic and surrounded by misty mountains.",
-          image: "/images/kandy.jpg",
-          alt: "Temple of the Sacred Tooth Relic in Kandy",
-        },
-        {
-          id: 8,
-          title: "Galle Fort",
-          description:
-            "A beautifully preserved 17th-century Dutch fort with colonial architecture, boutique hotels, and ocean views.",
-          image: "/images/galle.jpg",
-          alt: "Galle Fort with colonial architecture",
-        },
-        {
-          id: 9,
-          title: "Anuradhapura",
-          description:
-            "One of the ancient capitals of Sri Lanka, featuring the sacred Bodhi tree and impressive Buddhist monuments.",
-          image: "/images/anuradhapura.jpg",
-          alt: "Ancient stupas in Anuradhapura",
-        },
-        {
-          id: 10,
-          title: "Polonnaruwa",
-          description:
-            "The second ancient capital of Sri Lanka, featuring well-preserved ruins and the famous Gal Vihara Buddha statues.",
-          image: "/images/polonnaruwa.jpg",
-          alt: "Gal Vihara Buddha statues in Polonnaruwa",
-        },
-        {
-          id: 11,
-          title: "Nuwara Eliya",
-          description:
-            "Known as 'Little England', this hill station features tea plantations, colonial architecture, and cool mountain air.",
-          image: "/images/nuwaraeliya cover.jpg",
-          alt: "Tea plantations in Nuwara Eliya",
-        },
-        {
-          id: 12,
-          title: "Bentota",
-          description:
-            "A beautiful beach destination with golden sands, water sports, and the historic Galapatha Temple.",
-          image: "/images/ben.jpg",
-          alt: "Bentota Beach with golden sands",
-        }
+    {
+      id: 1,
+      title: "Sigiriya Rock Fortress",
+      description:
+        "Explore Sri Lanka's iconic Lion Rock fortress with palace ruins, ancient frescoes, and sweeping views over the jungle landscape.",
+      image: "/images/sigiriya cover.jpg",
+      alt: "Sigiriya Rock Fortress with ancient ruins",
+    },
+    {
+      id: 2,
+      title: "Ella",
+      description:
+        "A peaceful hill country town famous for Little Adam's Peak, Nine Arch Bridge, tea plantations, and scenic train rides.",
+      image: "/images/ella cover.jpg",
+      alt: "Ella hill country with green tea plantations",
+    },
+    {
+      id: 3,
+      title: "Yala National Park",
+      description:
+        "Go on a thrilling safari to see leopards, elephants, sloth bears, and hundreds of bird species in Sri Lanka's most popular national park.",
+      image: "/images/yala.jpg",
+      alt: "Leopard in Yala National Park",
+    },
+    {
+      id: 4,
+      title: "Mirissa Beach",
+      description:
+        "Perfect for whale watching, surfing, and relaxing under palm trees—Mirissa is a vibrant beach getaway on the south coast.",
+      image: "/images/coconut-hill.jpg",
+      alt: "Mirissa Beach sunset with palm trees",
+    },
+    {
+      id: 5,
+      title: "Dambulla Cave Temple",
+      description:
+        "A series of golden cave temples with more than 150 Buddha statues and ancient murals—a spiritual and artistic treasure.",
+      image: "/images/cave cover.jpg",
+      alt: "Golden Buddha statues in Dambulla Cave Temple",
+    },
+    {
+      id: 6,
+      title: "Pidurangala Rock",
+      description:
+        "Just next to Sigiriya, this lesser-known rock offers an amazing panoramic view of Lion Rock—especially at sunrise.",
+      image: "/images/pidurangala cover.jpg",
+      alt: "Hikers on Pidurangala Rock with mountain views",
+    },
+    {
+      id: 7,
+      title: "Kandy",
+      description:
+        "The cultural capital of Sri Lanka, home to the Temple of the Sacred Tooth Relic and surrounded by misty mountains.",
+      image: "/images/kandy.jpg",
+      alt: "Temple of the Sacred Tooth Relic in Kandy",
+    },
+    {
+      id: 8,
+      title: "Galle Fort",
+      description:
+        "A beautifully preserved 17th-century Dutch fort with colonial architecture, boutique hotels, and ocean views.",
+      image: "/images/galle.jpg",
+      alt: "Galle Fort with colonial architecture",
+    },
+    {
+      id: 9,
+      title: "Anuradhapura",
+      description:
+        "One of the ancient capitals of Sri Lanka, featuring the sacred Bodhi tree and impressive Buddhist monuments.",
+      image: "/images/anuradhapura.jpg",
+      alt: "Ancient stupas in Anuradhapura",
+    },
+    {
+      id: 10,
+      title: "Polonnaruwa",
+      description:
+        "The second ancient capital of Sri Lanka, featuring well-preserved ruins and the famous Gal Vihara Buddha statues.",
+      image: "/images/polonnaruwa.jpg",
+      alt: "Gal Vihara Buddha statues in Polonnaruwa",
+    },
+    {
+      id: 11,
+      title: "Nuwara Eliya",
+      description:
+        "Known as 'Little England', this hill station features tea plantations, colonial architecture, and cool mountain air.",
+      image: "/images/nuwaraeliya cover.jpg",
+      alt: "Tea plantations in Nuwara Eliya",
+    },
+    {
+      id: 12,
+      title: "Bentota",
+      description:
+        "A beautiful beach destination with golden sands, water sports, and the historic Galapatha Temple.",
+      image: "/images/ben.jpg",
+      alt: "Bentota Beach with golden sands",
+    }
   ]
+
+  // Get first 3 destinations for mobile
+  const firstThreeDestinations = destinations.slice(0, 3);
+  const remainingDestinations = destinations.slice(3);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
@@ -161,43 +167,87 @@ export default function PopularDestinations() {
       <div className="py-12 px-4 sm:px-4 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl md:text-5xl font-bold text-center text-gray-900 mb-12">
-          <span className="text-cyan-400">Most</span> <span className="text-gray-800">Popular</span>{" "}
-          <span className="text-cyan-400">Destinations</span>
+            <span className="text-cyan-400">Most</span> <span className="text-gray-800">Popular</span>{" "}
+            <span className="text-cyan-400">Destinations</span>
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {/* Desktop & Tablet: Show all destinations */}
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-8">
             {destinations.map((destination) => (
-              <div
-                key={destination.id}
-                className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-              >
-                <div className="h-48 w-full overflow-hidden">
-                  <img
-                    src={destination.image}
-                    alt={destination.alt}
-                    className="object-cover w-full h-full"
-                  />
-                </div>
-
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                    {destination.title}
-                  </h3>
-
-                  <p className="text-gray-600 text-sm leading-relaxed mb-6">
-                    {destination.description}
-                  </p>
-
-                  <Link to={`/destinations/${destination.id}`}>
-                    <button className="w-full bg-cyan-400 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
-                      Read More
-                    </button>
-                  </Link>
-                </div>
-              </div>
+              <DestinationCard key={destination.id} destination={destination} />
             ))}
           </div>
+
+          {/* Mobile: Show first 3 + toggle for remaining */}
+          <div className="md:hidden">
+            {/* First 3 destinations - always shown */}
+            <div className="grid grid-cols-1 gap-8 mb-6">
+              {firstThreeDestinations.map((destination) => (
+                <DestinationCard key={destination.id} destination={destination} />
+              ))}
+            </div>
+
+            {/* Remaining destinations - conditionally shown */}
+            {showAll && (
+              <div className="grid grid-cols-1 gap-8 mb-6">
+                {remainingDestinations.map((destination) => (
+                  <DestinationCard key={destination.id} destination={destination} />
+                ))}
+              </div>
+            )}
+
+            {/* Toggle Button */}
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={() => setShowAll(!showAll)}
+                className="flex items-center justify-center gap-2 bg-cyan-400 text-white px-6 py-3 rounded-full font-medium hover:bg-cyan-500 transition-all duration-300 shadow-md"
+              >
+                {showAll ? (
+                  <>
+                    Show Less
+                    <ChevronUp className="w-5 h-5" />
+                  </>
+                ) : (
+                  <>
+                    Show More Destinations
+                    <ChevronDown className="w-5 h-5" />
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+// Destination Card Component for reusability
+function DestinationCard({ destination }) {
+  return (
+    <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+      <div className="h-48 w-full overflow-hidden">
+        <img
+          src={destination.image}
+          alt={destination.alt}
+          className="object-cover w-full h-full"
+        />
+      </div>
+
+      <div className="p-6">
+        <h3 className="text-xl font-semibold text-gray-900 mb-3">
+          {destination.title}
+        </h3>
+
+        <p className="text-gray-600 text-sm leading-relaxed mb-6">
+          {destination.description}
+        </p>
+
+        <Link to={`/destinations/${destination.id}`}>
+          <button className="w-full bg-cyan-400 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200">
+            Read More
+          </button>
+        </Link>
       </div>
     </div>
   )

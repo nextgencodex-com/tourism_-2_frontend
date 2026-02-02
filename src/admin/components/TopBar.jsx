@@ -7,11 +7,14 @@ import {
   FiLogOut,
   FiChevronDown,
   FiUser,
-  FiSettings
+  FiSettings,
+  FiExternalLink
 } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 import { databaseService } from '../../services/databaseService';
 
 const TopBar = ({ setSidebarOpen, user, logout }) => {
+  const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -84,6 +87,15 @@ const TopBar = ({ setSidebarOpen, user, logout }) => {
 
         {/* Right side */}
         <div className="flex items-center space-x-4">
+          {/* Back to Website Button */}
+          <button
+            onClick={() => navigate('/')}
+            className="hidden md:flex items-center space-x-2 px-4 py-2 text-gray-700 hover:text-cyan-600 hover:bg-cyan-50 rounded-lg transition-all duration-200 border border-gray-300 hover:border-cyan-300"
+          >
+            <FiExternalLink className="h-5 w-5" />
+            <span className="font-medium">Back to Website</span>
+          </button>
+
           {/* Notifications */}
           <div className="relative">
             <button

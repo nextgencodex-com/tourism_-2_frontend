@@ -12,78 +12,17 @@ export default function KeyExperiencesPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  
-  // Hardcoded experiences
-  const hardcodedExperiences = [
-    {
-      id: 'hardcoded-1',
-      title: "Cultural Heritage",
-      description: "Immerse yourself in Sri Lanka's rich cultural heritage with visits to ancient temples, historical sites, and traditional ceremonies.",
-      image: "/images/cultural-1.jpg",
-      highlights: ["Temple of the Sacred Tooth Relic", "Ancient City of Polonnaruwa", "Traditional Dance Performances", "Local Artisan Workshops"],
-      duration: "2-3 days",
-      price: "From $150",
-      categoryUrl: "cultural-heritage",
-      isHardcoded: true
-    },
-    {
-      id: 'hardcoded-2',
-      title: "Wildlife Safari",
-      description: "Experience the thrill of spotting elephants, leopards, and exotic birds in their natural habitat across Sri Lanka's national parks.",
-      image: "/images/wildlife-1.jpg",
-      highlights: ["Yala National Park Safari", "Udawalawe Elephant Gathering", "Bird Watching Tours", "Conservation Education"],
-      duration: "1-2 days",
-      price: "From $120",
-      categoryUrl: "wildlife-nature",
-      isHardcoded: true
-    },
-    {
-      id: 'hardcoded-3',
-      title: "Tea Plantation Tours",
-      description: "Discover the world-famous Ceylon tea with guided tours through lush tea estates in the misty highlands.",
-      image: "/images/misty.jpg",
-      highlights: ["Tea Factory Visits", "Tea Tasting Sessions", "Plantation Walks", "Traditional Tea Making"],
-      duration: "1 day",
-      price: "From $80",
-      categoryUrl: "adventure-tours",
-      isHardcoded: true
-    },
-    {
-      id: 'hardcoded-4',
-      title: "Beach & Water Sports",
-      description: "Enjoy pristine beaches and exciting water activities along Sri Lanka's stunning coastline.",
-      image: "/images/beach-1.jpg",
-      highlights: ["Surfing Lessons", "Snorkeling Adventures", "Whale Watching", "Beach Yoga Sessions"],
-      duration: "2-4 days",
-      price: "From $200",
-      categoryUrl: "beach-holidays",
-      isHardcoded: true
-    },
-    {
-      id: 'hardcoded-5',
-      title: "Ayurveda & Wellness",
-      description: "Rejuvenate your mind and body with traditional Ayurvedic treatments and wellness programs.",
-      image: "/images/wellness-1.jpg",
-      highlights: ["Ayurvedic Consultations", "Traditional Massages", "Meditation Sessions", "Herbal Medicine"],
-      duration: "3-7 days",
-      price: "From $300",
-      categoryUrl: "pilgrimage-tours",
-      isHardcoded: true
-    },
-    {
-      id: 'hardcoded-6',
-      title: "Adventure Sports",
-      description: "Get your adrenaline pumping with thrilling adventure activities in Sri Lanka's diverse landscapes.",
-      image: "/images/wellness-2.jpg",
-      highlights: ["Rock Climbing", "White Water Rafting", "Zip Lining", "Mountain Biking"],
-      duration: "1-3 days",
-      price: "From $100",
-      categoryUrl: "adventure-tours",
-      isHardcoded: true
-    }
-  ];
 
-  // Combine hardcoded and database packages marked as key experiences
+  // WhatsApp: same behavior as other pages (0774488732)
+  const WHATSAPP_NUMBER = '94774488732';
+  const openWhatsApp = (customMessage) => {
+    const defaultMessage = 'Hello, I would like to book this experience.';
+    const text = encodeURIComponent(customMessage || defaultMessage);
+    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+    window.open(url, '_blank');
+  };
+
+  // Only show packages from backend marked as key experiences (no frontend demo data)
   useEffect(() => {
     if (packages && packages.length > 0) {
       const keyExperiencePackages = packages
@@ -95,16 +34,12 @@ export default function KeyExperiencesPage() {
           image: pkg.images && pkg.images[0] ? pkg.images[0] : '/images/placeholder.jpg',
           highlights: pkg.highlights || [],
           duration: pkg.duration,
-          price: `From $${pkg.price}`,
-          categoryUrl: pkg.category,
-          isHardcoded: false
+          price: pkg.price != null ? `From $${pkg.price}` : 'Contact us',
+          categoryUrl: pkg.category
         }));
-      
-      // Combine hardcoded experiences first, then database packages
-      setAllExperiences([...hardcodedExperiences, ...keyExperiencePackages]);
+      setAllExperiences(keyExperiencePackages);
     } else {
-      // If no packages loaded yet or none marked as key experiences, show only hardcoded
-      setAllExperiences(hardcodedExperiences);
+      setAllExperiences([]);
     }
   }, [packages]);
 
@@ -116,75 +51,8 @@ export default function KeyExperiencesPage() {
   };
 
   const handleBookNow = (experience) => {
-    if (experience.isHardcoded) {
-      navigate(`/planning/category/${experience.categoryUrl}`);
-    } else {
-      navigate(`/planning/package/${experience.id}`);
-    }
+    openWhatsApp(`Hello, I would like to book this experience: ${experience.title || 'Key Experience'}.`);
   };
-
-  const experiences = [
-    {
-      id: 1,
-      title: "Cultural Heritage",
-      description: "Immerse yourself in Sri Lanka's rich cultural heritage with visits to ancient temples, historical sites, and traditional ceremonies.",
-      image: "/images/cultural-1.jpg",
-      highlights: ["Temple of the Sacred Tooth Relic", "Ancient City of Polonnaruwa", "Traditional Dance Performances", "Local Artisan Workshops"],
-      duration: "2-3 days",
-      price: "From $150",
-      categoryUrl: "cultural-heritage"
-    },
-    {
-      id: 2,
-      title: "Wildlife Safari",
-      description: "Experience the thrill of spotting elephants, leopards, and exotic birds in their natural habitat across Sri Lanka's national parks.",
-      image: "/images/wildlife-1.jpg",
-      highlights: ["Yala National Park Safari", "Udawalawe Elephant Gathering", "Bird Watching Tours", "Conservation Education"],
-      duration: "1-2 days",
-      price: "From $120",
-      categoryUrl: "wildlife-nature"
-    },
-    {
-      id: 3,
-      title: "Tea Plantation Tours",
-      description: "Discover the world-famous Ceylon tea with guided tours through lush tea estates in the misty highlands.",
-      image: "/images/misty.jpg",
-      highlights: ["Tea Factory Visits", "Tea Tasting Sessions", "Plantation Walks", "Traditional Tea Making"],
-      duration: "1 day",
-      price: "From $80",
-      categoryUrl: "adventure-tours"
-    },
-    {
-      id: 4,
-      title: "Beach & Water Sports",
-      description: "Enjoy pristine beaches and exciting water activities along Sri Lanka's stunning coastline.",
-      image: "/images/beach-1.jpg",
-      highlights: ["Surfing Lessons", "Snorkeling Adventures", "Whale Watching", "Beach Yoga Sessions"],
-      duration: "2-4 days",
-      price: "From $200",
-      categoryUrl: "beach-holidays"
-    },
-    {
-      id: 5,
-      title: "Ayurveda & Wellness",
-      description: "Rejuvenate your mind and body with traditional Ayurvedic treatments and wellness programs.",
-      image: "/images/wellness-1.jpg",
-      highlights: ["Ayurvedic Consultations", "Traditional Massages", "Meditation Sessions", "Herbal Medicine"],
-      duration: "3-7 days",
-      price: "From $300",
-      categoryUrl: "pilgrimage-tours"
-    },
-    {
-      id: 6,
-      title: "Adventure Sports",
-      description: "Get your adrenaline pumping with thrilling adventure activities in Sri Lanka's diverse landscapes.",
-      image: "/images/wellness-2.jpg",
-      highlights: ["Rock Climbing", "White Water Rafting", "Zip Lining", "Mountain Biking"],
-      duration: "1-3 days",
-      price: "From $100",
-      categoryUrl: "adventure-tours"
-    }
-  ]; // This will be removed after confirming the merge works
 
   if (isLoading) {
     return (
@@ -257,69 +125,85 @@ export default function KeyExperiencesPage() {
           </p>
         </div>
 
-        {/* Experiences Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {allExperiences.map((experience) => (
-            <div key={experience.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-              <div className="relative h-48">
-                {experience.isHardcoded ? (
-                  <img 
-                    src={experience.image} 
-                    alt={experience.title} 
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
+        {/* Experiences Grid - dynamic data from backend only */}
+        {allExperiences.length === 0 ? (
+          <div className="text-center py-16 mb-16">
+            <div className="max-w-md mx-auto">
+              <div className="text-gray-400 mb-6">
+                <svg className="w-24 h-24 mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-4a2 2 0 01-2 2v1a2 2 0 01-2 2H8a2 2 0 01-2-2v-1a2 2 0 01-2-2H4" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-4">No Key Experiences Yet</h3>
+              <p className="text-gray-600 mb-6">
+                Key experiences marked by admin will appear here. Check back soon or contact us to plan your trip.
+              </p>
+              <button
+                type="button"
+                className="bg-cyan-400 text-white px-6 py-3 rounded-lg font-semibold hover:bg-cyan-500 transition-colors"
+                onClick={() => openWhatsApp('Hello, I would like to book an experience.')}
+              >
+                Contact via WhatsApp
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+            {allExperiences.map((experience) => (
+              <div key={experience.id} className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+                <div className="relative h-48">
                   <LocalImage
                     src={experience.image}
                     alt={experience.title}
                     className="w-full h-full object-cover"
                     fallback="/images/placeholder.jpg"
                   />
-                )}
-                <div className="absolute top-4 left-4">
-                  <span className="bg-cyan-400 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                    {experience.duration}
-                  </span>
+                  <div className="absolute top-4 left-4">
+                    <span className="bg-cyan-400 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                      {experience.duration}
+                    </span>
+                  </div>
+                  <div className="absolute top-4 right-4">
+                    <span className="bg-white/90 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">
+                      {experience.price}
+                    </span>
+                  </div>
                 </div>
-                <div className="absolute top-4 right-4">
-                  <span className="bg-white/90 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">
-                    {experience.price}
-                  </span>
+
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">
+                    {experience.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 leading-relaxed">
+                    {experience.description}
+                  </p>
+
+                  <div className="mb-4">
+                    <h4 className="font-semibold text-gray-900 mb-2">Highlights:</h4>
+                    <ul className="text-sm text-gray-700 space-y-1">
+                      {(experience.highlights || []).map((highlight, index) => (
+                        <li key={index} className="flex items-center">
+                          <span className="w-2 h-2 bg-cyan-400 rounded-full mr-2"></span>
+                          {highlight}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="flex space-x-2">
+                    <button
+                      type="button"
+                      className="flex-1 border border-cyan-400 text-cyan-400 py-2 px-4 rounded-lg font-semibold hover:bg-cyan-400 hover:text-white transition-colors"
+                      onClick={() => handleBookNow(experience)}
+                    >
+                      Book Now
+                    </button>
+                  </div>
                 </div>
               </div>
-              
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
-                  {experience.title}
-                </h3>
-                <p className="text-gray-600 mb-4 leading-relaxed">
-                  {experience.description}
-                </p>
-                
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-900 mb-2">Highlights:</h4>
-                  <ul className="text-sm text-gray-700 space-y-1">
-                    {experience.highlights.map((highlight, index) => (
-                      <li key={index} className="flex items-center">
-                        <span className="w-2 h-2 bg-cyan-400 rounded-full mr-2"></span>
-                        {highlight}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div className="flex space-x-2">
-                  <button 
-                    className="flex-1 border border-cyan-400 text-cyan-400 py-2 px-4 rounded-lg font-semibold hover:bg-cyan-400 hover:text-white transition-colors"
-                    onClick={() => handleBookNow(experience)}
-                  >
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Why Choose Our Experiences */}
         <div className="mb-16">

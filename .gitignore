@@ -13,8 +13,6 @@ dist-ssr
 *.local
 
 # Environment variables
-.env
-.env.local
 .env.*.local
 
 # Large archives and build artifacts
@@ -33,3 +31,4 @@ dist.zip
 *.njsproj
 *.sln
 *.sw?
+config.bat

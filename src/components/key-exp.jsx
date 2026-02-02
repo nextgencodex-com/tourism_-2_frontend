@@ -309,9 +309,6 @@ export default function KeyExperiencesPage() {
                 </div>
                 
                 <div className="flex space-x-2">
-                  <button className="flex-1 bg-cyan-400 text-white py-2 px-4 rounded-lg font-semibold hover:bg-cyan-500 transition-colors">
-                    Learn More
-                  </button>
                   <button 
                     className="flex-1 border border-cyan-400 text-cyan-400 py-2 px-4 rounded-lg font-semibold hover:bg-cyan-400 hover:text-white transition-colors"
                     onClick={() => handleBookNow(experience)}

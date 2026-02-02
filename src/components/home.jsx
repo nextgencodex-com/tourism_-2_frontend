@@ -26,10 +26,21 @@ export default function Home() {
     },
   ])
   const messagesEndRef = useRef(null)
+  const hasInteractedRef = useRef(false)
 
-  // Auto-scroll to bottom when messages change
+  // Scroll to top when component mounts
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  }, [])
+
+  // Auto-scroll to bottom when messages change (only after user interaction)
+  useEffect(() => {
+    if (assistantMessages.length > 1 || isLoading) {
+      hasInteractedRef.current = true
+    }
+    if (hasInteractedRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
   }, [assistantMessages, isLoading])
   
   // Custom AI Chat Widget State
